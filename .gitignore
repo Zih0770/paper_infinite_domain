@@ -13,3 +13,12 @@ compile_commands.json
 # Results (optional: only track scripts, not generated images)
 plots/*.png
 results/
+CMakeUserPresets.json
+build/
+bin/
+compile_commands.json
+plots/
+*.msh
+*.vtk
+*.vtu
+*.sol
