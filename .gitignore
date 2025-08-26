@@ -1,0 +1,15 @@
+# build outputs
+build/
+bin/
+*.o
+*.a
+*.so
+# IDE/compile DB
+compile_commands.json
+# Python venv
+.venv/
+# Meshes (generated)
+*.msh
+# Results (optional: only track scripts, not generated images)
+plots/*.png
+results/
