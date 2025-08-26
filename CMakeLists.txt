@@ -14,6 +14,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "C++ standard: ${CMAKE_CXX_STANDARD}")
 
+find_package(MPI REQUIRED CXX)
+
 # ---- Output directories (set BEFORE any targets) ----
 # Libraries still go under build/, executables go to project_root/bin
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -70,8 +72,8 @@ include_directories("${PETSC_DIR}/${PETSC_ARCH}/include")
 include_directories("${PETSC_DIR}/include")
 link_directories("${PETSC_DIR}/${PETSC_ARCH}/lib")
 find_package(Boost REQUIRED)
-set(MPI_CXX_LIBRARIES "${PETSC_DIR}/${PETSC_ARCH}/lib/libmpi.so")
-set(MPI_CXX_INCLUDE_PATH "${PETSC_DIR}/${PETSC_ARCH}/include")
+#set(MPI_CXX_LIBRARIES "${PETSC_DIR}/${PETSC_ARCH}/lib/libmpi.so")
+#set(MPI_CXX_INCLUDE_PATH "${PETSC_DIR}/${PETSC_ARCH}/include")
 include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
 
 # ---- Prebuilt giafem from the other project ----
@@ -110,6 +112,11 @@ target_include_directories(meshgeom PUBLIC
 
 # ---- Executables ----
 # (No 'test' target since src/test.cpp is empty / no main())
+add_executable(Poisson_big_domain src/Poisson_big_domain.cpp)
+target_link_libraries(Poisson_big_domain PRIVATE
+  ${MFEM_LIBRARIES}
+  MPI::MPI_CXX
+)
 
 # Mesh generators that use Gmsh and the helper lib
 set(MESH_GENERATORS

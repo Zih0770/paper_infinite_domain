@@ -7,18 +7,17 @@
 #include <vector>
 
 #include <gmsh.h>
-#include "common.hpp" // createCircle(cx, cy, r, lc)
+#include "common.hpp" 
 
 struct Params {
   double a = 0.1, b = 1.0;
-  double x0 = 0.5, y0 = 0.5;     // small-center
-  double x1 = 0.0, y1 = 0.0;     // big-center
-  double Rout = 1.2;             // outer radius (b + buffer)
+  double x0 = 0.5, y0 = 0.5;     
+  double x1 = 0.0, y1 = 0.0;     
+  double Rout = 1.2;            
   double small = 0.01, big = 0.10, fac = 0.30;
-  double t = 0.5, theta_deg = 45.0; // polar placement for small if x0/y0 not set
+  double t = 0.5, theta_deg = 45.0; 
 } P;
 
-/* --- short-flag parsing: accepts "-k v" or "-k=v" --- */
 static void getd(int argc, char** argv, const char* key, double& dst){
   std::string k(key), eq=k+"=";
   for(int i=1;i<argc;++i){
@@ -48,7 +47,6 @@ static void parseArgs(int argc, char** argv){
   }
 }
 
-/* --- pass only Gmsh-understood flags to gmsh::initialize --- */
 static void buildFilteredArgsForGmsh(int argc, char** argv,
                                      std::vector<std::string>& argsStr,
                                      std::vector<char*>& argvOut){
@@ -68,11 +66,10 @@ static void buildFilteredArgsForGmsh(int argc, char** argv,
   for(auto& t:argsStr) argvOut.push_back(const_cast<char*>(t.c_str()));
 }
 
-/* --- mesh size field (a,b are radii constants in your formulas) --- */
 static double meshSizeCallback(int, int, double x, double y, double z, double lc){
   using std::hypot;
   const double rs = hypot(x-P.x0, y-P.y0); // dist to small center
-  const double rb = hypot(x-P.x1, y-P.y1); // dist to big   center
+  const double rb = hypot(x-P.x1, y-P.y1); // dist to big center
   const double a = P.a, b = P.b, R = P.Rout, fac = P.fac;
 
   auto lerp = [](double A,double B,double t){ return A + (B - A)*t; };
@@ -80,7 +77,7 @@ static double meshSizeCallback(int, int, double x, double y, double z, double lc
 
   const double ab = (a / b);
   const double dS = fac * a;   // band thickness around small boundary
-  const double dB = fac * b;   // band thickness around big  boundary
+  const double dB = fac * b;   // band thickness around big boundary
 
   // SMALL CIRCLE: rs < a
   if(rs < a){
@@ -112,20 +109,16 @@ static double meshSizeCallback(int, int, double x, double y, double z, double lc
 
   // BUFFER: b <= rb <= R
   if(rb <= R){
-    // Entire buffer ramps with the SAME slope as inside big near the big boundary:
     // slope s = (big - small) / (fac * b)
     const double thick = std::max(R - b, 1e-12);
     const double s = (P.big - P.small) / (dB > 0 ? dB : 1e-12);
     const double d_outB = rb - b;                  // distance from big boundary (outside)
-    // 0 at r=b gives 'small'; grows linearly with same slope across whole buffer
     double h = P.small + s * d_outB;
-    // keep it bounded within the buffer ramp (optional clamp to the end-of-buffer value)
     const double h_end = P.small + s * thick;
     if(h > h_end) h = h_end;
     return h;
   }
 
-  // outside R (not meshed)
   return P.big;
 }
 
@@ -166,7 +159,7 @@ int main(int argc, char** argv){
   gmsh::option::setNumber("Mesh.MeshOnlyVisible", 1);
 
   gmsh::model::mesh::generate(2);
-  gmsh::write("circular_offset.msh");
+  gmsh::write("mesh/circular_offset.msh");
 
   gmsh::option::setNumber("Mesh.Points", 0);
   gmsh::option::setNumber("Mesh.SurfaceEdges", 0);

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <gmsh.h>
-#include "common.hpp" // createSphere(cx,cy,cz,r,lc) -> pair<int, std::vector<int>>
+#include "common.hpp"
 
 struct Params {
   double a = 0.25;   // small sphere radius
@@ -21,7 +21,6 @@ struct Params {
   double x1 = 0.0, y1 = 0.0, z1 = 0.0;
 } P;
 
-/* ---- short-flag parsing: "-k v" or "-k=v" ---- */
 static void getd(int argc, char** argv, const char* key, double& dst){
   std::string k(key), eq = k + "=";
   for(int i=1;i<argc;++i){
@@ -41,12 +40,9 @@ static void parseArgs(int argc, char** argv){
   getd(argc,argv,"-small",P.small); getd(argc,argv,"-big",P.big);
   getd(argc,argv,"-fac",P.fac);   getd(argc,argv,"-R",P.R);
 
-  // defaults & sanity
   if(P.R <= 0.0) P.R = 1.2 * P.b;
-  // place small center in x–z plane, angle th from +x, distance t*b
   const double th = P.th_deg * std::numbers::pi / 180.0;
   double d = P.t * P.b;
-  // ensure small fits inside big
   if(d + P.a >= P.b){
     P.t = std::max(0.0, (P.b - P.a) / P.b * 0.95);
     d = P.t * P.b;
@@ -57,7 +53,6 @@ static void parseArgs(int argc, char** argv){
   P.z0 = P.z1 + d * std::sin(th);
 }
 
-/* ---- pass only Gmsh-understood flags to gmsh::initialize ---- */
 static void buildFilteredArgsForGmsh(int argc, char** argv,
                                      std::vector<std::string>& argsStr,
                                      std::vector<char*>& argvOut){
@@ -76,7 +71,6 @@ static void buildFilteredArgsForGmsh(int argc, char** argv,
   for(auto& t:argsStr) argvOut.push_back(const_cast<char*>(t.c_str()));
 }
 
-/* ---- mesh size field (a,b,R are radii constants in the formulas) ---- */
 static double meshSizeCallback(int, int, double x, double y, double z, double lc){
   const double rs = std::sqrt((x-P.x0)*(x-P.x0) + (y-P.y0)*(y-P.y0) + (z-P.z0)*(z-P.z0)); // dist to small center
   const double rb = std::sqrt((x-P.x1)*(x-P.x1) + (y-P.y1)*(y-P.y1) + (z-P.z1)*(z-P.z1)); // dist to big   center
@@ -89,18 +83,16 @@ static double meshSizeCallback(int, int, double x, double y, double z, double lc
   const double dS = fac * a; // small boundary band thickness
   const double dB = fac * b; // big boundary band thickness
 
-  // SMALL SPHERE: rs < a
   if(rs < a){
     const double d = a - rs; // distance to small boundary (inside)
     if(d <= dS){
       const double t = c01(d / dS);
       return lerp(P.small*ab, P.big*ab, t);   // small*(a/b) -> big*(a/b)
     } else {
-      return P.big*ab;                        // core constant
+      return P.big*ab;                      
     }
   }
 
-  // BIG SPHERE (outside small): rb < b
   if(rb < b){
     // near small boundary (outside side)
     const double d_outS = rs - a;
@@ -117,7 +109,6 @@ static double meshSizeCallback(int, int, double x, double y, double z, double lc
     return P.big;                              // elsewhere inside big
   }
 
-  // BUFFER: b <= rb <= R — entire buffer ramps with SAME slope as interior big-boundary band
   if(rb <= R){
     const double thick = std::max(R - b, 1e-12);
     const double slope = (P.big - P.small) / (dB > 0 ? dB : 1e-12); // (big-small)/(fac*b)
@@ -169,7 +160,7 @@ int main(int argc, char** argv){
   gmsh::option::setNumber("Mesh.MeshOnlyVisible", 1);
 
   gmsh::model::mesh::generate(3);
-  gmsh::write("spherical_offset.msh");
+  gmsh::write("mesh/spherical_offset.msh");
 
   gmsh::option::setNumber("Mesh.Points", 0);
   gmsh::option::setNumber("Mesh.SurfaceEdges", 0);
