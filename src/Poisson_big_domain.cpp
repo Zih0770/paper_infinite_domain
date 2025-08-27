@@ -35,15 +35,15 @@ int main(int argc, char *argv[])
    args.Parse();
    if (!args.Good()) { if (myid==0) args.PrintUsage(cout); return 1; }
    if (myid==0) args.PrintOptions(cout);
-
+   
    Mesh mesh(mesh_file, 1, 1, true);
    ParMesh pmesh(MPI_COMM_WORLD, mesh);
-   mesh.Clear();
+   //mesh.Clear();
 
    const int dim = pmesh.Dimension();
    H1_FECollection fec(order, dim);
    ParFiniteElementSpace fes(&pmesh, &fec);
-   if (myid==0) { cout << "Global unknowns: " << fes.GlobalTrueVSize() << endl; }
+   //if (myid==0) { cout << "Global unknowns: " << fes.GlobalTrueVSize() << endl; }
 
    Array<int> ess_tdof_list;
    if (pmesh.bdr_attributes.Size())
