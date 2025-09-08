@@ -90,13 +90,24 @@ endif()
 
 # ---- Solver ----
 add_executable(Poisson_big_domain src/Poisson_big_domain.cpp)
+target_include_directories(Poisson_big_domain PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(Poisson_big_domain PRIVATE ${MFEM_TARGET} MPI::MPI_CXX)
+
+add_executable(Poisson_DtN src/Poisson_DtN.cpp)
+target_include_directories(Poisson_DtN PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(Poisson_DtN PRIVATE ${MFEM_TARGET} MPI::MPI_CXX)
+
+add_executable(Poisson_multipole src/Poisson_multipole.cpp)
+target_include_directories(Poisson_multipole PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(Poisson_multipole PRIVATE ${MFEM_TARGET} MPI::MPI_CXX)
 
 # ---- Gmsh tools (only if enabled) ----
 if(ENABLE_GMSH)
   set(MESH_GENERATORS
     mesh/offset_2d.cpp
     mesh/offset_3d.cpp
+    mesh/simple_2d.cpp
+    mesh/simple_3d.cpp
   )
   foreach(mesh_src ${MESH_GENERATORS})
     get_filename_component(exec_name ${mesh_src} NAME_WE)
