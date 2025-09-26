@@ -93,6 +93,10 @@ add_executable(Poisson_big_domain src/Poisson_big_domain.cpp)
 target_include_directories(Poisson_big_domain PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(Poisson_big_domain PRIVATE ${MFEM_TARGET} MPI::MPI_CXX)
 
+add_executable(ex2p src/ex2p.cpp)
+target_include_directories(ex2p PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(ex2p PRIVATE ${MFEM_TARGET} MPI::MPI_CXX)
+
 add_executable(Poisson_DtN src/Poisson_DtN.cpp)
 target_include_directories(Poisson_DtN PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(Poisson_DtN PRIVATE ${MFEM_TARGET} MPI::MPI_CXX)
