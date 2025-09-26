@@ -24,3 +24,5 @@ plots/
 *.vtk
 *.vtu
 *.sol
+*.00*
+*.png
