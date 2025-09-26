@@ -26,3 +26,4 @@ plots/
 *.sol
 *.00*
 *.png
+*.opt
