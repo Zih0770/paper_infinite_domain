@@ -5,39 +5,21 @@
 #include <numbers>
 #include <string>
 #include <vector>
-#include <filesystem>
-#include <chrono>
+#include <filesystem>  // keep if you already support -out
 
 #include <gmsh.h>
 #include "common.hpp" // assumes createSphere(...) is available
 
 struct Params {
-  double a = 1.0;                 // small sphere radius 
-  double b = 4.0;                 // big sphere radius   
-  double d = 2.0;                 // offset distance from big center
+  double a = 1.0;                 // small sphere radius (default like 2D)
+  double b = 4.0;                 // big sphere radius   (default like 2D)
+  double d = 2.0;                 // offset distance from big center (default like 2D: 0.5*b)
   double th_deg = 45.0;           // angle (deg) in x–z plane from +x
-  double small = 0.05, big = 0.50, fac = 0.50; 
-  double x0 = 0.0, y0 = 0.0, z0 = 0.0; // small center 
+  double small = 0.05, big = 0.50, fac = 0.50; // defaults analogous to your 2D example
+  double x0 = 0.0, y0 = 0.0, z0 = 0.0; // small center (computed)
   double x1 = 0.0, y1 = 0.0, z1 = 0.0; // big center (origin)
   std::string out = "mesh/simple_3d.msh"; // default output
-  int elemOrder = 2;
-  int alg3D = 1;
 } P;
-static void checkParams() {
-  const double ratio_ab    = (P.b > 0.0 ? P.a / P.b : 0.0);
-  const double small_outer = (P.a > 0.0 ? P.small * (P.b / P.a) : P.small);
-
-  if(ratio_ab * P.big < P.small) {
-    std::cerr << "Error: ratio_ab * big (" << ratio_ab * P.big
-              << ") < small (" << P.small << ")\n";
-    std::exit(EXIT_FAILURE);
-  }
-  if(small_outer > P.big) {
-    std::cerr << "Error: small_outer (" << small_outer
-              << ") > big (" << P.big << ")\n";
-    std::exit(EXIT_FAILURE);
-  }
-}
 
 static void getd(int argc, char** argv, const char* key, double& dst){
   std::string k(key), eq=k+"=";
@@ -53,26 +35,16 @@ static void gets(int argc, char** argv, const char* key, std::string& dst){
     else if(s.rfind(eq,0)==0){ dst=s.substr(eq.size()); }
   }
 }
-static void geti(int argc, char** argv, const char* key, int& dst){
-  std::string k(key), eq=k+"=";
-  for(int i=1;i<argc;++i){
-    std::string s(argv[i]);
-    if(s==k){ if(i+1<argc) dst=std::atoi(argv[++i]); }
-    else if(s.rfind(eq,0)==0){ dst=std::atoi(s.c_str()+eq.size()); }
-  }
-}
 static bool hasKey(int argc, char** argv, const char* key){
   std::string k(key), eq=k+"=";
   for(int i=1;i<argc;++i){ std::string s(argv[i]); if(s==k||s.rfind(eq,0)==0) return true; }
   return false;
 }
 static void parseArgs(int argc, char** argv){
-  getd(argc,argv,"-a",P.a); getd(argc,argv,"-b",P.b);
-  getd(argc,argv,"-d",P.d); getd(argc,argv,"-th",P.th_deg);
+  getd(argc,argv,"-a",P.a);     getd(argc,argv,"-b",P.b);
+  getd(argc,argv,"-d",P.d);     getd(argc,argv,"-th",P.th_deg);
   getd(argc,argv,"-small",P.small); getd(argc,argv,"-big",P.big); getd(argc,argv,"-fac",P.fac);
-  gets(argc,argv,"-out",P.out); gets(argc,argv,"-o",P.out);
-  geti(argc,argv,"-order",P.elemOrder);
-  geti(argc,argv,"-alg3d",P.alg3D);
+  gets(argc,argv,"-out",P.out); gets(argc,argv,"-o",P.out); // keep existing option
 
   // place small-sphere center at distance d from big center in x–z plane
   const double th = P.th_deg * std::numbers::pi / 180.0;
@@ -86,7 +58,7 @@ static void buildFilteredArgsForGmsh(int argc, char** argv,
                                      std::vector<std::string>& argsStr,
                                      std::vector<char*>& argvOut){
   static const std::vector<std::string> ours={
-    "-a","-b","-d","-th","-small","-big","-fac","-out","-o","-order","-alg3d","-nopopup"
+    "-a","-b","-d","-th","-small","-big","-fac","-out","-o"
   };
   auto isOurs=[&](const std::string& s,std::string& k)->bool{
     for(const auto& key:ours) if(s==key||s.rfind(key+"=",0)==0){ k=key; return true; }
@@ -115,13 +87,13 @@ static double meshSizeCallback(int, int, double x, double y, double z, double /*
   const double d_in  = fac * a;   // depth from r=a into shell
   const double d_out = fac * b;   // depth from r=b into interior
 
-  if(rb > b) return small_outer;
+  if(rb >= b) return P.big;
 
   // Inside small sphere: ramp from small at r=a inward to (a/b)*big over fac*a
   if(rs < a){
     const double din = a - rs;
     if(din <= d_in){
-      const double t = clamp01(din / d_in);
+      const double t = clamp01(din / (d_in > eps ? d_in : eps));
       return lerp(P.small, ratio_ab * P.big, t);
     } else {
       return ratio_ab * P.big;
@@ -133,14 +105,14 @@ static double meshSizeCallback(int, int, double x, double y, double z, double /*
   double size_from_inner = P.big;
   {
     const double d = rs - a; // distance from inner boundary
-    const double t = clamp01(d / d_in);
+    const double t = clamp01((d_in > eps) ? (d / d_in) : 1.0);
     size_from_inner = lerp(P.small, P.big, t);
   }
   // 2) From outer boundary: small*b/a -> big over depth fac*b
   double size_from_outer = P.big;
   {
     const double d = b - rb; // inward distance from outer boundary
-    const double t = clamp01(d / d_out);
+    const double t = clamp01((d_out > eps) ? (d / d_out) : 1.0);
     size_from_outer = lerp(small_outer, P.big, t);
   }
 
@@ -148,11 +120,7 @@ static double meshSizeCallback(int, int, double x, double y, double z, double /*
 }
 
 int main(int argc, char** argv){
-  using clock = std::chrono::steady_clock;
-  const auto t0 = clock::now();
-
   parseArgs(argc, argv);
-  checkParams();
 
   std::vector<std::string> gmshArgsStr; std::vector<char*> gmshArgv;
   buildFilteredArgsForGmsh(argc, argv, gmshArgsStr, gmshArgv);
@@ -179,16 +147,12 @@ int main(int argc, char** argv){
   gmsh::model::addPhysicalGroup(2,  surf_small, 11);
   gmsh::model::addPhysicalGroup(2,  surf_big,   12);
 
-  gmsh::option::setNumber("Mesh.ElementOrder", P.elemOrder);
+  gmsh::option::setNumber("Mesh.ElementOrder", 2);
   gmsh::option::setNumber("Mesh.MshFileVersion", 2.2);
-  gmsh::option::setNumber("Mesh.MeshOnlyVisible", 0);
-  gmsh::option::setNumber("Mesh.Algorithm3D", P.alg3D); // Delaunay (unchanged)
+  gmsh::option::setNumber("Mesh.MeshOnlyVisible", 1);
+  gmsh::option::setNumber("Mesh.Algorithm3D", 4); // Delaunay (unchanged)
 
   gmsh::model::mesh::generate(3);
-
-  const auto t1 = clock::now();
-  const double seconds = std::chrono::duration<double>(t1 - t0).count();
-  std::cout << "Meshing took " << seconds << " s\n";
 
   // write (default)
   std::filesystem::path outPath(P.out);
@@ -196,15 +160,14 @@ int main(int argc, char** argv){
   gmsh::write(P.out.c_str());
 
   gmsh::option::setNumber("Mesh.Points", 0);
-  gmsh::option::setNumber("Mesh.SurfaceEdges", 1);
-  gmsh::option::setNumber("Mesh.SurfaceFaces", 0);
+  gmsh::option::setNumber("Mesh.SurfaceEdges", 0);
+  gmsh::option::setNumber("Mesh.SurfaceFaces", 1);
 
   bool no_popup=false;
   for(int i=1;i<argc;++i) if(std::string(argv[i])=="-nopopup"){ no_popup=true; break; }
   if(!no_popup) gmsh::fltk::run();
 
   gmsh::finalize();
-
   return 0;
 }
 

@@ -5,7 +5,8 @@
 #include <numbers>
 #include <string>
 #include <vector>
-#include <filesystem>  // keep if you already support -out
+#include <filesystem>
+#include <chrono>
 
 #include <gmsh.h>
 #include "common.hpp"
@@ -16,8 +17,32 @@ struct Params {
   double x1 = 0.0, y1 = 0.0;      // big-circle center
   double small = 0.01, big = 0.10, fac = 0.30;
   double d = 0.0, theta_deg = 45.0;            // placement via distance d at angle theta
-  std::string out = "mesh/simple_2d.msh";      // CHANGED default
+  std::string out = "mesh/simple_2d.msh";
+  int elemOrder = 2;  
+  int alg2D = 6;       // example default (Frontal-Delaunay)
 } P;
+static void checkParams() {
+  if (P.a <= 0.0 || P.b <= 0.0 || P.a >= P.b) {
+    std::cerr << "Error: require 0 < a < b (got a=" << P.a << ", b=" << P.b << ")\n";
+    std::exit(EXIT_FAILURE);
+  }
+  if (P.fac <= 0.0) {
+    std::cerr << "Error: fac must be > 0 (got " << P.fac << ")\n";
+    std::exit(EXIT_FAILURE);
+  }
+  const double ratio_ab    = P.a / P.b;               // a/b
+  const double small_outer = P.small * (P.b / P.a);   // small*b/a
+  if (ratio_ab * P.big < P.small) {
+    std::cerr << "Error: ratio_ab * big (" << ratio_ab * P.big
+              << ") < small (" << P.small << ")\n";
+    std::exit(EXIT_FAILURE);
+  }
+  if (small_outer > P.big) {
+    std::cerr << "Error: small_outer (" << small_outer
+              << ") > big (" << P.big << ")\n";
+    std::exit(EXIT_FAILURE);
+  }
+}
 
 static void getd(int argc, char** argv, const char* key, double& dst){
   std::string k(key), eq=k+"=";
@@ -33,33 +58,46 @@ static void gets(int argc, char** argv, const char* key, std::string& dst){
     else if(s.rfind(eq,0)==0){ dst=s.substr(eq.size()); }
   }
 }
+static void geti(int argc, char** argv, const char* key, int& dst){
+  std::string k(key), eq=k+"=";
+  for(int i=1;i<argc;++i){
+    std::string s(argv[i]);
+    if(s==k){ if(i+1<argc) dst=std::atoi(argv[++i]); }
+    else if(s.rfind(eq,0)==0){ dst=std::atoi(s.c_str()+eq.size()); }
+  }
+}
 static bool hasKey(int argc, char** argv, const char* key){
   std::string k(key), eq=k+"=";
   for(int i=1;i<argc;++i){ std::string s(argv[i]); if(s==k||s.rfind(eq,0)==0) return true; }
   return false;
 }
+
 static void parseArgs(int argc, char** argv){
   getd(argc,argv,"-a",P.a);   getd(argc,argv,"-b",P.b);
   getd(argc,argv,"-x0",P.x0); getd(argc,argv,"-y0",P.y0);
   getd(argc,argv,"-x1",P.x1); getd(argc,argv,"-y1",P.y1);
   getd(argc,argv,"-d",P.d);   getd(argc,argv,"-th",P.theta_deg);
   getd(argc,argv,"-small",P.small); getd(argc,argv,"-big",P.big); getd(argc,argv,"-fac",P.fac);
-  gets(argc,argv,"-out",P.out); gets(argc,argv,"-o",P.out); // keep existing option
+  gets(argc,argv,"-out",P.out); gets(argc,argv,"-o",P.out);
+  geti(argc,argv,"-order",P.elemOrder);
+  geti(argc,argv,"-alg2d",P.alg2D);
 
   if(!hasKey(argc,argv,"-x0") && !hasKey(argc,argv,"-y0")){
     const double th=P.theta_deg*std::numbers::pi/180.0;
-    // default d matches old default t=0.5
     double d = hasKey(argc,argv,"-d") ? P.d : (0.5 * P.b);
     if(d + P.a >= P.b){ d = std::max(0.0, (P.b - P.a)*0.95); }
     P.x0 = P.x1 + d*std::cos(th);
     P.y0 = P.y1 + d*std::sin(th);
   }
 }
+
 static void buildFilteredArgsForGmsh(int argc, char** argv,
                                      std::vector<std::string>& argsStr,
                                      std::vector<char*>& argvOut){
+  // add the new flags here so they don't reach Gmsh
   static const std::vector<std::string> ours={
-    "-a","-b","-d","-th","-x0","-y0","-x1","-y1","-small","-big","-fac","-out","-o"
+    "-a","-b","-d","-th","-x0","-y0","-x1","-y1","-small","-big","-fac","-out","-o",
+    "-order","-alg2d","-nopopup"
   };
   auto isOurs=[&](const std::string& s,std::string& k)->bool{
     for(const auto& key:ours) if(s==key||s.rfind(key+"=",0)==0){ k=key; return true; }
@@ -73,7 +111,6 @@ static void buildFilteredArgsForGmsh(int argc, char** argv,
   for(auto& t:argsStr) argvOut.push_back(const_cast<char*>(t.c_str()));
 }
 
-// --- size callback: two simultaneous boundary-layer ramps in the annulus ---
 static double meshSizeCallback(int, int, double x, double y, double /*z*/, double /*lc*/){
   using std::hypot;
   const double rs = hypot(x - P.x0, y - P.y0); // distance to small center
@@ -83,45 +120,42 @@ static double meshSizeCallback(int, int, double x, double y, double /*z*/, doubl
   auto lerp    = [](double A,double B,double t){ return A + (B - A)*t; };
   auto clamp01 = [](double t){ return t < 0.0 ? 0.0 : (t > 1.0 ? 1.0 : t); };
 
-  const double eps = 1e-14;
-  const double ratio_ab = (b > eps) ? (a / b) : 0.0;               // a/b
-  const double small_outer = (a > eps) ? (P.small * (b / a)) : P.small; // small*b/a
-  const double d_in  = fac * a;  // depth from r=a into annulus
-  const double d_out = fac * b;  // depth from r=b into interior
+  const double ratio_ab    = a / b;                 // a/b
+  const double small_outer = P.small * (b / a);     // small*b/a
+  const double d_in  = fac * a;                     // depth from r=a
+  const double d_out = fac * b;                     // depth from r=b
 
-  if(rb > b + 1e-12) return P.big; // outside geometry (shouldn't happen)
+  if(rb > b) return small_outer;                        
 
-  // Inside small circle: unchanged behavior
+  // inside small circle
   if(rs < a){
     const double din = a - rs; // >= 0
     if(din <= d_in){
-      const double t = clamp01(din / (d_in > eps ? d_in : eps));
+      const double t = clamp01(din / d_in);
       return lerp(P.small, ratio_ab * P.big, t);
     } else {
       return ratio_ab * P.big;
     }
   }
 
-  // Annulus (a <= r <= b): two simultaneous ramps, take the minimum
-  // 1) From inner boundary: small -> big over depth fac*a
-  double size_from_inner = P.big;
-  {
-    const double d = rs - a; // distance from inner boundary
-    const double t = clamp01((d_in > eps) ? (d / d_in) : 1.0);
-    size_from_inner = lerp(P.small, P.big, t);
-  }
-  // 2) From outer boundary: small*b/a -> big over depth fac*b
-  double size_from_outer = P.big;
-  {
-    const double d = b - rb; // inward distance from outer boundary
-    const double t = clamp01((d_out > eps) ? (d / d_out) : 1.0);
-    size_from_outer = lerp(small_outer, P.big, t);
-  }
+  // in the annulus: take min of inner/outer ramps
+  const double d_from_inner = rs - a;  // >= 0
+  const double t_in  = clamp01(d_from_inner / d_in);
+  const double size_from_inner = lerp(P.small, P.big, t_in);
+
+  const double d_from_outer = b - rb;  // >= 0
+  const double t_out = clamp01(d_from_outer / d_out);
+  const double size_from_outer = lerp(small_outer, P.big, t_out);
+
   return std::min(size_from_inner, size_from_outer);
 }
 
 int main(int argc, char** argv){
+  using clock = std::chrono::steady_clock;
+  const auto t0 = clock::now();
+
   parseArgs(argc, argv);
+  checkParams();
 
   std::vector<std::string> gmshArgsStr; std::vector<char*> gmshArgv;
   buildFilteredArgsForGmsh(argc, argv, gmshArgsStr, gmshArgv);
@@ -148,13 +182,16 @@ int main(int argc, char** argv){
   gmsh::model::addPhysicalGroup(1,b1,11);
   gmsh::model::addPhysicalGroup(1,b2,12);
 
-  gmsh::option::setNumber("Mesh.ElementOrder", 3);
-  gmsh::option::setNumber("Mesh.MshFileVersion", 2.2);
-  gmsh::option::setNumber("Mesh.MeshOnlyVisible", 1);
+  gmsh::option::setNumber("Mesh.ElementOrder", P.elemOrder);
+  gmsh::option::setNumber("Mesh.Algorithm",    P.alg2D);
 
   gmsh::model::mesh::generate(2);
 
-  // write (default changed)
+  const auto t1 = clock::now();
+  const double seconds = std::chrono::duration<double>(t1 - t0).count();
+  std::cout << "2D meshing took " << seconds << " s\n";
+
+  // write
   std::filesystem::path outPath(P.out);
   if(outPath.has_parent_path()) std::filesystem::create_directories(outPath.parent_path());
   gmsh::write(P.out.c_str());
