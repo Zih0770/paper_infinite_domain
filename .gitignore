@@ -10,6 +10,8 @@ compile_commands.json
 .venv/
 # Meshes (generated)
 *.msh
+*.00*
+*.png
 # Results (optional: only track scripts, not generated images)
 plots/*.png
 results/
