@@ -6,68 +6,55 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <sstream>
 
 #include "uniform_sphere.hpp"
 #include "common.hpp"
 
+// Use your mesh utilities
+#include "mfemElasticity/mesh.hpp"
+
 using namespace mfem;
 using namespace std;
 using clk = std::chrono::steady_clock;
 
-// ---- helpers ----
+namespace {
 
-static pair<int,double> EvalAtPoint(const ParGridFunction &gf, const Vector &x)
+// ---------------- helpers ----------------
+
+static double EvalCoefficientAtPointGlobal(Coefficient &coef,
+                                           ParMesh &pmesh,
+                                           const Vector &x)
 {
-  auto *pmesh = gf.ParFESpace()->GetParMesh();
-  for (int e = 0; e < pmesh->GetNE(); ++e) {
-    ElementTransformation *T = pmesh->GetElementTransformation(e);
+  double loc_val = 0.0;
+  int    loc_has = 0;
+
+  for (int e = 0; e < pmesh.GetNE(); ++e)
+  {
+    ElementTransformation *T = pmesh.GetElementTransformation(e);
     InverseElementTransformation inv(T);
     IntegrationPoint ip;
-    if (inv.Transform(x, ip) == InverseElementTransformation::Inside) {
+    if (inv.Transform(x, ip) == InverseElementTransformation::Inside)
+    {
       T->SetIntPoint(&ip);
-      return {1, gf.GetValue(*T, ip)};
+      loc_val = coef.Eval(*T, ip); // Coefficient::Eval is non-const
+      loc_has = 1;
+      break;
     }
   }
-  return {0, 0.0};
+
+  double glob_val = 0.0;
+  int    glob_has = 0;
+  MPI_Allreduce(&loc_val, &glob_val, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Allreduce(&loc_has, &glob_has, 1, MPI_INT,    MPI_SUM, MPI_COMM_WORLD);
+
+  if (glob_has > 0) { glob_val /= glob_has; }
+  return glob_val;
 }
 
-static Vector ComputeRegionCentroid(ParMesh &pmesh, int attr)
-{
-  const int dim = pmesh.Dimension();
-  Vector s(dim); s = 0.0; double w = 0.0;
-  for (int e = 0; e < pmesh.GetNE(); ++e) {
-    if (pmesh.GetAttribute(e) != attr) continue;
-    Vector c(dim); pmesh.GetElementCenter(e, c);
-    const double ve = pmesh.GetElementVolume(e);
-    for (int d = 0; d < dim; ++d) s[d] += ve * c[d];
-    w += ve;
-  }
-  Vector sg(dim); sg = 0.0; double wg = 0.0;
-  MPI_Allreduce(s.GetData(), sg.GetData(), dim, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  MPI_Allreduce(&w, &wg, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  if (wg > 0.0) sg /= wg;
-  return sg;
-}
-
-static double SampledValueAt(const ParGridFunction &gf, const Vector &c0, double r, int n)
-{
-  auto [f0, v0] = EvalAtPoint(gf, c0);
-  double sum = f0 ? v0 : 0.0; int cnt = f0 ? 1 : 0;
-  const int dim = gf.ParFESpace()->GetParMesh()->Dimension();
-  for (int k = 0; k < n; ++k) {
-    const double th = 2.0 * M_PI * k / n;
-    Vector x(c0.Size()); x = c0;
-    if (dim == 2) { x[0] += r * cos(th); x[1] += r * sin(th); }
-    else          { x[0] += r * cos(th); x[2] += r * sin(th); }
-    auto [f, v] = EvalAtPoint(gf, x);
-    if (f) { sum += v; cnt++; }
-  }
-  return (cnt > 0) ? sum / cnt : 0.0;
-}
-
-// --- NEW: parallel-safe global sampling (sum + count reduction) ---
-static double SampledValueAtGlobal(const ParGridFunction &gf, const Vector &c0, double r, int n)
+static double SampledValueAtGlobal(const ParGridFunction &gf, const Vector &c0,
+                                   double r, int n)
 {
   double loc_sum = 0.0; int loc_cnt = 0;
 
@@ -105,31 +92,27 @@ static double SampledValueAtGlobal(const ParGridFunction &gf, const Vector &c0, 
   return (glob_cnt > 0) ? (glob_sum / glob_cnt) : 0.0;
 }
 
-static double L2NormSq_Quadrature(const ParFiniteElementSpace &fes, const ParGridFunction &u)
+// global relative L2 on elements with attribute == small_attr
+static double ComputeRelL2_OnAttribute(const ParGridFunction &phi,
+                                       const ParGridFunction &exact_gf,
+                                       ParMesh &pmesh, int small_attr)
 {
-  double loc = 0.0;
-  const int NE = fes.GetNE();
-  for (int e = 0; e < NE; ++e)
-  {
-    ElementTransformation *T = fes.GetElementTransformation(e);
-    const FiniteElement *fe  = fes.GetFE(e);
-    const Geometry::Type gt  = fe->GetGeomType();
-    const int qorder = 2*fe->GetOrder() + 2;
-    const IntegrationRule &ir = IntRules.Get(gt, qorder);
-    for (int i = 0; i < ir.GetNPoints(); ++i)
-    {
-      const IntegrationPoint &ip = ir.IntPoint(i);
-      T->SetIntPoint(&ip);
-      const double v = u.GetValue(*T, ip);
-      loc += v*v * ip.weight * T->Weight();
-    }
+  Array<int> elems;
+  elems.Reserve(pmesh.GetNE());
+  for (int e = 0; e < pmesh.GetNE(); ++e) {
+    if (pmesh.GetAttribute(e) == small_attr) elems.Append(e);
   }
-  double glob = 0.0;
-  MPI_Allreduce(&loc, &glob, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  return glob;
+
+  GridFunctionCoefficient exact_coef(&exact_gf);
+  ConstantCoefficient zero_c(0.0);
+
+  const double num = phi.ComputeL2Error(exact_coef, /*irs*/nullptr, &elems);
+  const double den = exact_gf.ComputeL2Error(zero_c, /*irs*/nullptr, &elems);
+
+  return (den > 0.0) ? (num / den) : 0.0;
 }
 
-// (phi - exact) / (|exact| + eps)
+// for residual visualization on submesh
 struct RelErrSignedCoefficient : public Coefficient {
   const ParGridFunction &phi, &exact; double eps;
   RelErrSignedCoefficient(const ParGridFunction &ph, const ParGridFunction &ex, double e=1e-14)
@@ -141,7 +124,6 @@ struct RelErrSignedCoefficient : public Coefficient {
   }
 };
 
-// log10(|field| + eps)
 struct LogAbsCoefficient : public Coefficient {
   const ParGridFunction &f; double eps;
   LogAbsCoefficient(const ParGridFunction &ff, double e=1e-14) : f(ff), eps(e) {}
@@ -151,16 +133,12 @@ struct LogAbsCoefficient : public Coefficient {
   }
 };
 
-// ---- write submesh results (compact writers) ----
-//
-// Writes per-rank files only for ranks that have elements in the submesh.
-// Suffixes are re-numbered to 000000..(np'-1) where np' is the number of writers.
-// After running, check stdout or results/<tag>.sm.info.txt for the GLVis command;
-// it will be like: glvis -np <np'> -m results/<tag>.sm.mesh -g results/<tag>.sm.resid
+// Save mesh/fields restricted to the small-domain submesh (attribute == small_attr)
 static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int small_attr,
                                      ParMesh &pmesh,
                                      const ParGridFunction &phi_shifted,
-                                     const ParGridFunction &exact_shifted)
+                                     const ParGridFunction &exact_shifted,
+                                     double relL2_small)
 {
   const int world_rank = Mpi::WorldRank();
 
@@ -179,6 +157,7 @@ static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int smal
   psub.Transfer(phi_shifted,  phi_sm);
   psub.Transfer(exact_shifted, exact_sm);
 
+  // Residual fields for visualization (no L2 norm computation here)
   ParGridFunction resid_sm(&sfes);
   RelErrSignedCoefficient rcoef(phi_sm, exact_sm, 1e-14);
   resid_sm.ProjectCoefficient(rcoef);
@@ -186,11 +165,6 @@ static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int smal
   ParGridFunction resid_logabs_sm(&sfes);
   LogAbsCoefficient logabs_coef(resid_sm, 1e-14);
   resid_logabs_sm.ProjectCoefficient(logabs_coef);
-
-  ParGridFunction diff_sm(&sfes); diff_sm = phi_sm; diff_sm -= exact_sm;
-  const double num_sq = L2NormSq_Quadrature(sfes, diff_sm);
-  const double den_sq = L2NormSq_Quadrature(sfes, exact_sm);
-  const double relL2  = (den_sq > 0.0) ? std::sqrt(num_sq/den_sq) : 0.0;
 
   // Build compact writer communicator: only ranks with submesh elements participate.
   const int has_local = (psub.GetNE() > 0) ? 1 : 0;
@@ -239,15 +213,17 @@ static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int smal
     MPI_Comm_free(&subcomm);
   }
 
-  // Keep relL2 text on world rank 0
+  // Keep relL2 text on world rank 0 (value provided by caller)
   if (Mpi::WorldRank() == 0) {
     std::ofstream rL2("results/" + tag + ".sm.relL2.txt");
     rL2 << std::setprecision(16)
-        << "relative_L2_error_on_small_domain " << relL2 << "\n";
+        << "relative_L2_error_on_small_domain " << relL2_small << "\n";
   }
 }
 
-// ---- main ----
+} // namespace
+
+// ---------------- main ----------------
 
 int main(int argc, char *argv[])
 {
@@ -255,25 +231,29 @@ int main(int argc, char *argv[])
   Mpi::Init(argc, argv);
   Hypre::Init();
 
-  const int myid = Mpi::WorldRank();
+  const int myid   = Mpi::WorldRank();
   const int nprocs = Mpi::WorldSize();
 
-  const char *mesh_file = "mesh/simple_2d_4.msh";
+  const char *mesh_file = "mesh/simple_3d_ref.msh";
   int order = 2;
   int small_attr = 1;
   int large_attr = 2;
 
-  double rho_small_dim = 5514.0;
+  double rho_small_dim = 5000.0;
   double rho_large_dim = 0.0;
   double G_dim = 6.67430e-11;
 
-  double L_scale = 1.0;
+  double L_scale   = 7e6;
   double RHO_scale = rho_small_dim;
-  double T_scale = 1.0 / std::sqrt(G_dim * RHO_scale);
+  double T_scale   = 1.0 / std::sqrt(G_dim * RHO_scale);
 
-  bool visualization = false;
-  bool dimensional_output = false;
+  bool visualization       = false;
+  bool dimensional_output  = false;
 
+  // Inner sphere radius (default 0.7)
+  double inner_radius = 0.7;
+
+  // ---- CLI ----
   OptionsParser args(argc, argv);
   args.AddOption(&mesh_file, "-m", "--mesh", "Gmsh mesh file (.msh).");
   args.AddOption(&order, "-o", "--order", "H1 FE order.");
@@ -285,6 +265,7 @@ int main(int argc, char *argv[])
   args.AddOption(&L_scale, "--L", "-L", "Length scale.");
   args.AddOption(&T_scale, "--T", "-T", "Time scale.");
   args.AddOption(&RHO_scale, "--RHO", "-RHO", "Density scale.");
+  args.AddOption(&inner_radius, "-ir", "--inner-radius", "Inner sphere radius a (default 0.7).");
   args.AddOption(&dimensional_output,
                  "-dim", "--dimensional-output",
                  "-no-dim", "--no-dimensional-output",
@@ -298,17 +279,18 @@ int main(int argc, char *argv[])
   auto since = [](clk::time_point a){ return std::chrono::duration<double>(clk::now()-a).count(); };
   auto Tsetup0 = clk::now();
 
+  // ---- Scaling ----
   Nondimensionalisation nd(L_scale, T_scale, RHO_scale);
   const double rho_small_nd = nd.ScaleDensity(rho_small_dim);
   const double rho_large_nd = nd.ScaleDensity(rho_large_dim);
-  const double G_nd = G_dim * T_scale * T_scale * RHO_scale;
+  const double G_nd         = G_dim * T_scale * T_scale * RHO_scale;
 
+  // ---- Mesh / FES ----
   Mesh mesh(mesh_file, 1, 1, true);
   ParMesh pmesh(MPI_COMM_WORLD, mesh);
   mesh.Clear();
 
   const int dim = pmesh.Dimension();
-  pmesh.SetCurvature(std::max(1, order), false, dim, Ordering::byVDIM);
 
   H1_FECollection fec(order, dim);
   ParFiniteElementSpace fes(&pmesh, &fec);
@@ -322,6 +304,7 @@ int main(int argc, char *argv[])
 
   auto Tsetup = since(Tsetup0);
 
+  // ---- RHS: -4πG ρ ----
   Vector rho_vals(pmesh.attributes.Max()); rho_vals = 0.0;
   rho_vals(small_attr - 1) = rho_small_nd;
   rho_vals(large_attr - 1) = rho_large_nd;
@@ -345,6 +328,7 @@ int main(int argc, char *argv[])
 
   auto Tasm = since(Tasm0);
 
+  // ---- Solve ----
   auto Tsolve0 = clk::now();
 
   OperatorPtr A; Vector B, X;
@@ -363,41 +347,76 @@ int main(int argc, char *argv[])
 
   auto Tsolve = since(Tsolve0);
 
+  // ---- Post ----
   auto Tpost0 = clk::now();
 
-  Vector c0 = ComputeRegionCentroid(pmesh, small_attr);
+  // Centroid of SMALL region (attribute small_attr)
+  Array<int> small_marker(pmesh.attributes.Max()); small_marker = 0;
+  small_marker[small_attr - 1] = 1;
+  Vector c0 = mfemElasticity::MeshCentroid(&pmesh, small_marker, /*order*/1);
 
-  // UPDATED: exact global sampling for the center shift (numerical)
-  const double r_eps = 0.02; const int nsmp = 12;
-  double phi_c = SampledValueAtGlobal(phi, c0, r_eps, nsmp);
+  // Adaptive sampling radius: min element "diameter" on the small region
+  double h_small = std::numeric_limits<double>::infinity();
+  for (int e = 0; e < pmesh.GetNE(); ++e) {
+    if (pmesh.GetAttribute(e) != small_attr) continue;
+    h_small = std::min(h_small, pmesh.GetElementSize(e, 1)); // 1 = diameter-like metric
+  }
+  double h_small_glob = h_small;
+  MPI_Allreduce(&h_small, &h_small_glob, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+
+  const double r_eps = 0.3 * h_small_glob; // assumed finite; no lower guard
+  const int    nsmp  = 24;
+
+  // Subtract gauge from numerical solution via ring average at centroid
+  const double phi_c = SampledValueAtGlobal(phi, c0, r_eps, nsmp);
   phi -= phi_c;
 
-  // Exact field and UPDATED global center shift (analytic)
-  UniformSphereSolution base(dim, c0, 1.0);
+  // Analytic solution coefficient for a uniform sphere of radius 'inner_radius'
+  UniformSphereSolution base(dim, c0, inner_radius);
   FunctionCoefficient base_exact = base.Coefficient();
+
+  // Scale analytic coefficient by rho*G using a named ConstantCoefficient (lvalue)
   ConstantCoefficient scale_pos(rho_small_nd * G_nd);
   ProductCoefficient exact_coeff_scaled(scale_pos, base_exact);
 
+  // Project analytic to a gridfunction for L2 norms/plots
   ParGridFunction exact_gf(&fes); exact_gf = 0.0;
   exact_gf.ProjectCoefficient(exact_coeff_scaled);
 
-  double exact_c0 = SampledValueAtGlobal(exact_gf, c0, r_eps, nsmp);
+  // Subtract gauge from analytic solution by evaluating the coefficient exactly at centroid
+  const double exact_c0 = EvalCoefficientAtPointGlobal(exact_coeff_scaled, pmesh, c0);
   exact_gf -= exact_c0;
 
+  // Shift (+1) if you want strictly positive outputs (optional; keeps parity with older scripts)
   ParGridFunction phi_out(&fes), exact_out(&fes);
   phi_out = phi; exact_out = exact_gf;
-  if (dimensional_output) { nd.UnscaleGravityPotential(phi_out); nd.UnscaleGravityPotential(exact_out); }
   phi_out  += 1.0;
   exact_out += 1.0;
 
-  auto Tpost = since(Tpost0);
+  if (dimensional_output) {
+    nd.UnscaleGravityPotential(phi_out);
+    nd.UnscaleGravityPotential(exact_out);
+  }
 
-  std::filesystem::create_directories("results");
+  // Global relative L2 on inner sphere (attribute == small_attr)
   const std::string tag = std::filesystem::path(mesh_file).stem().string();
+  std::filesystem::create_directories("results");
 
+  const double relL2_small = ComputeRelL2_OnAttribute(phi_out, exact_out, pmesh, small_attr);
+  if (Mpi::WorldRank() == 0) {
+    std::ofstream rL2("results/" + tag + ".sm.relL2.txt");
+    rL2 << std::setprecision(16)
+        << "relative_L2_error_on_small_domain " << relL2_small << "\n";
+    std::cout << std::scientific << std::setprecision(6)
+              << "[relL2] inner-sphere = " << relL2_small << std::endl;
+  }
+
+  // I/O timing (submesh save + small-domain files)
   auto Tio0 = clk::now();
-  SaveOnSmallDomainSubmesh(tag, order, small_attr, pmesh, phi_out, exact_out);
-  auto Tio = since(Tio0);
+  SaveOnSmallDomainSubmesh(tag, order, small_attr, pmesh, phi_out, exact_out, relL2_small);
+  const double Tio = since(Tio0);
+
+  auto Tpost = since(Tpost0);
 
   if (myid == 0) {
     ofstream times("results/" + tag + ".timings.txt");
