@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
   dom_marker[0] = 1;
   auto bdr_marker = Array<int>(pmesh.bdr_attributes.Max());
   bdr_marker = 0;
-  bdr_marker[1] = 1;
+  bdr_marker[11-1] = 1;
   auto c1 = MeshCentroid(&pmesh, dom_marker);
   auto [found1, same1, r1] = SphericalBoundaryRadius(&pmesh, bdr_marker, c1);
 

@@ -210,42 +210,6 @@ static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int smal
   }
 }
 
-// Estimate inner spherical interface radius from the small_attr submesh boundary
-static std::pair<int,double>
-EstimateInnerSphereRadius(ParMesh &pmesh, int small_attr, const Vector &c0)
-{
-  Array<int> marker(pmesh.attributes.Max()); marker = 0;
-  marker[small_attr] = 1;
-  ParSubMesh psub = ParSubMesh::CreateFromDomain(pmesh, marker);
-
-  ParMesh &sm = psub;
-  const int dim = sm.Dimension();
-
-  Array<int> bdr_vtx(sm.GetNV()); bdr_vtx = 0;
-  for (int be = 0; be < sm.GetNBE(); ++be) {
-    Array<int> v; sm.GetBdrElementVertices(be, v);
-    for (int i = 0; i < v.Size(); ++i) bdr_vtx[v[i]] = 1;
-  }
-
-  double loc_sum = 0.0; int loc_cnt = 0;
-  for (int vi = 0; vi < sm.GetNV(); ++vi) {
-    if (!bdr_vtx[vi]) continue;
-    const double *vx = sm.GetVertex(vi);
-    Vector x(dim);
-    for (int d = 0; d < dim; ++d) x[d] = vx[d];
-    double r2 = 0.0;
-    for (int d = 0; d < dim; ++d) { const double dx = x[d] - c0[d]; r2 += dx*dx; }
-    loc_sum += std::sqrt(r2);
-    loc_cnt += 1;
-  }
-
-  double glob_sum = 0.0; int glob_cnt = 0;
-  MPI_Allreduce(&loc_sum, &glob_sum, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  MPI_Allreduce(&loc_cnt, &glob_cnt, 1, MPI_INT,    MPI_SUM, MPI_COMM_WORLD);
-  if (glob_cnt == 0) return {0, 0.0};
-  return {1, glob_sum / glob_cnt};
-}
-
 // =============================== main =====================================
 
 int main(int argc, char *argv[])
@@ -312,9 +276,9 @@ int main(int argc, char *argv[])
   const int dim = pmesh.Dimension();
 
   // centroid of small region
-  Array<int> small_marker(pmesh.attributes.Max()); small_marker = 0;
-  small_marker[small_attr] = 1;
-  Vector c0 = MeshCentroid(&pmesh, small_marker, /*order*/1);
+  Array<int> v1_marker(pmesh.attributes.Max()); v1_marker = 0;
+  v1_marker[small_attr] = 1;
+  Vector c0 = MeshCentroid(&pmesh, v1_marker, /*order*/1);
   if (myid == 0) { cout << "centroid (small region): "; c0.Print(cout); }
 
   H1_FECollection fec(order, dim);
@@ -421,7 +385,10 @@ int main(int argc, char *argv[])
   // --------------------------- Postprocessing ------------------------------
   auto Tpost0 = clk::now();
 
-  auto [found0, same0, r0] = SphericalBoundaryRadius(&pmesh, small_marker, c0);
+  Array<int> b1_marker(pmesh.bdr_attributes.Max());
+  b1_marker = 0;
+  b1_marker[11-1] = 1;
+  auto [found0, same0, r0] = SphericalBoundaryRadius(&pmesh, b1_marker, c0);
   if (myid == 0) { std::cout<<"r0: "<<r0<<std::endl; }
 
   UniformSphereSolution base(dim, c0, r0);

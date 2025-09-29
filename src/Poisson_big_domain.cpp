@@ -295,6 +295,11 @@ int main(int argc, char *argv[])
   mesh.Clear();
 
   const int dim = pmesh.Dimension();
+  if (myid==0)
+  {
+      std::cout << "num volume attrs = " << pmesh.attributes.Size() << "\n";
+      std::cout << "num bdr attrs    = " << pmesh.bdr_attributes.Size() << "\n";
+  }
 
   H1_FECollection fec(order, dim);
   ParFiniteElementSpace fes(&pmesh, &fec);
@@ -329,7 +334,7 @@ int main(int argc, char *argv[])
   a.AddDomainIntegrator(new DiffusionIntegrator(one));
   a.Assemble();
 
-  if (bc == BC_NEUMANN) {
+  /*if (bc == BC_NEUMANN) {
       ParLinearForm L(&fes);
       ConstantCoefficient one_c(1.0);
       L.AddDomainIntegrator(new DomainLFIntegrator(one_c));
@@ -342,7 +347,7 @@ int main(int argc, char *argv[])
       if (volume != 0.0) {
           b.Add(-(f_int/volume), L);
       }
-  }
+  }*/
 
   auto Tasm = since(Tasm0);
 
@@ -377,12 +382,15 @@ int main(int argc, char *argv[])
   auto Tpost0 = clk::now();
 
   // Centroid of SMALL region (attribute small_attr)
-  Array<int> small_marker(pmesh.attributes.Max()); small_marker = 0;
-  small_marker[small_attr] = 1;
-  Vector c0 = mfemElasticity::MeshCentroid(&pmesh, small_marker, /*order*/1);
+  Array<int> v1_marker(pmesh.attributes.Max()); v1_marker = 0;
+  v1_marker[small_attr] = 1;
+  Vector c0 = mfemElasticity::MeshCentroid(&pmesh, v1_marker, /*order*/1);
   if (myid == 0) { cout << "centroid (small region): "; c0.Print(cout); }
 
-  auto [found0, same0, r0] = mfemElasticity::SphericalBoundaryRadius(&pmesh, small_marker, c0);
+  Array<int> b1_marker(pmesh.bdr_attributes.Max());
+  b1_marker = 0;
+  b1_marker[11-1] = 1;
+  auto [found0, same0, r0] = mfemElasticity::SphericalBoundaryRadius(&pmesh, b1_marker, c0);
   if (myid == 0) { std::cout<<"r0: "<<r0<<std::endl; }
 
   // Analytic solution coefficient for a uniform sphere of radius 'inner_radius'

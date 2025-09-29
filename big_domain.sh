@@ -5,7 +5,7 @@ set -euo pipefail
 NP=8
 BIN=./bin/Poisson_big_domain
 ORDER=3
-BC=1   # 0 = Dirichlet(0), 1 = Neumann(0)  <-- force Neumann
+BC=0   # 0 = Dirichlet(0), 1 = Neumann(0)  <-- force Neumann
 
 # Mesh list and their b/a values
 declare -a MESHES=(
