@@ -54,109 +54,11 @@ This is the parallel version of ex2.
 #include "mfemElasticity.hpp"
 #include "uniform_sphere.hpp"
 
-#include <filesystem>
-#include <iomanip>
-#include <sstream>
-
 using namespace std;
 using namespace mfem;
 using namespace mfemElasticity;
 
 constexpr real_t pi = std::numbers::pi_v<real_t>;
-
-static void SaveSubmeshAndHint(ParMesh &pmesh,
-                               int small_attr,
-                               int order,
-                               const ParGridFunction &x_residual, 
-                               Coefficient &exact_coeff,         
-                               const std::string &tag)
-{
-  const int world_rank = Mpi::WorldRank();
-
-  Array<int> marker(pmesh.attributes.Max()); marker = 0;
-  marker[small_attr] = 1;
-  ParSubMesh psub = ParSubMesh::CreateFromDomain(pmesh, marker);
-
-  // FE space on submesh
-  H1_FECollection sfec(order, psub.Dimension());
-  ParFiniteElementSpace sfes(&psub, &sfec);
-
-  // Transfer residual (phi-exact) to submesh
-  ParGridFunction resid_sm(&sfes); resid_sm = 0.0;
-  psub.Transfer(x_residual, resid_sm);
-
-  // Rebuild exact on submesh only to derive phi_sm and signed relative error, but DO NOT save it.
-  ParGridFunction exact_sm(&sfes); exact_sm = 0.0;
-  exact_sm.ProjectCoefficient(exact_coeff);
-
-  // phi_sm = resid_sm + exact_sm (this is the actual phi on submesh)
-  ParGridFunction phi_sm(&sfes); phi_sm = resid_sm; phi_sm += exact_sm;
-
-  // Build signed relative error: (phi - exact)/max(|exact|,eps)
-  struct RelErrSignedCoefficient : public Coefficient {
-    const ParGridFunction &phi, &exact; double eps;
-    RelErrSignedCoefficient(const ParGridFunction &ph, const ParGridFunction &ex, double e=1e-14)
-      : phi(ph), exact(ex), eps(e) {}
-    double Eval(ElementTransformation &T, const IntegrationPoint &ip) override {
-      const double v  = phi.GetValue(T, ip);
-      const double ve = exact.GetValue(T, ip);
-      return (v - ve) / std::max(std::abs(ve), eps);
-    }
-  } rcoef(phi_sm, exact_sm, 1e-14);
-
-  ParGridFunction resid_signed_sm(&sfes); resid_signed_sm.ProjectCoefficient(rcoef);
-
-  // log10(|resid_signed| + eps) for dynamic range plotting
-  struct LogAbsCoefficient : public Coefficient {
-    const ParGridFunction &f; double eps;
-    LogAbsCoefficient(const ParGridFunction &ff, double e=1e-14) : f(ff), eps(e) {}
-    double Eval(ElementTransformation &T, const IntegrationPoint &ip) override {
-      const double v = f.GetValue(T, ip);
-      return std::log10(std::abs(v) + eps);
-    }
-  } logabs(resid_signed_sm, 1e-14);
-
-  ParGridFunction resid_logabs_sm(&sfes); resid_logabs_sm.ProjectCoefficient(logabs);
-
-  // Compact writer communicator: only submesh ranks write
-  const int has_local = (psub.GetNE() > 0) ? 1 : 0;
-  MPI_Comm subcomm = MPI_COMM_NULL;
-  const int color = has_local ? 1 : MPI_UNDEFINED;
-  MPI_Comm_split(MPI_COMM_WORLD, color, world_rank, &subcomm);
-
-  int subrank = -1, subsize = 0;
-  if (has_local) { MPI_Comm_rank(subcomm, &subrank); MPI_Comm_size(subcomm, &subsize); }
-
-  if (world_rank == 0) { std::filesystem::create_directories("results"); }
-
-  if (has_local) {
-    std::ostringstream mname, gphi, gres, glog;
-    mname << "results/" << tag << ".sm.mesh."     << std::setw(6) << std::setfill('0') << subrank;
-    gphi  << "results/" << tag << ".sm.phi."      << std::setw(6) << std::setfill('0') << subrank;
-    gres  << "results/" << tag << ".sm.resid."    << std::setw(6) << std::setfill('0') << subrank;
-    glog  << "results/" << tag << ".sm.residlog." << std::setw(6) << std::setfill('0') << subrank;
-
-    { std::ofstream(mname.str()) << std::setprecision(8) << psub;
-      std::ofstream f1(gphi.str());  f1.precision(8);  phi_sm.Save(f1);
-      std::ofstream f2(gres.str());  f2.precision(8);  resid_signed_sm.Save(f2);
-      std::ofstream f3(glog.str());  f3.precision(8);  resid_logabs_sm.Save(f3); }
-
-    if (subrank == 0) {
-      std::ofstream info("results/" + tag + ".sm.info.txt");
-      info << "glvis_np " << subsize << "\n"
-           << "glvis_cmd glvis -np " << subsize
-           << " -m results/" << tag << ".sm.mesh"
-           << " -g results/" << tag << ".sm.resid\n";
-      if (world_rank == 0) {
-        std::cout << "[GLVis] submesh writers (np) = " << subsize << "\n"
-                  << "        glvis -np " << subsize
-                  << " -m results/" << tag << ".sm.mesh"
-                  << " -g results/" << tag << ".sm.resid\n";
-      }
-    }
-    MPI_Comm_free(&subcomm);
-  }
-}
 
 int main(int argc, char *argv[]) {
   // Initialise MPI and Hypre.
@@ -204,8 +106,6 @@ int main(int argc, char *argv[]) {
     args.PrintOptions(cout);
   }
 
-  const std::string tag = std::filesystem::path(mesh_file).stem().string();
-
   // Read in mesh in serial.
   auto mesh = Mesh(mesh_file, 1, 1);
   auto dim = mesh.Dimension();
@@ -230,7 +130,7 @@ int main(int argc, char *argv[]) {
   dom_marker[0] = 1;
   auto bdr_marker = Array<int>(pmesh.bdr_attributes.Max());
   bdr_marker = 0;
-  bdr_marker[1] = 1;
+  bdr_marker[0] = 1;
   auto c1 = MeshCentroid(&pmesh, dom_marker);
   auto [found1, same1, r1] = SphericalBoundaryRadius(&pmesh, bdr_marker, c1);
 
@@ -465,14 +365,16 @@ int main(int argc, char *argv[]) {
     if (myid == 0) {
       cout << "L2 error: " << error << endl;
     }
-
-    SaveSubmeshAndHint(pmesh, /*small_attr=*/0, order, x, exact_coeff, tag);
   }
 
   // Write to file.
   ostringstream mesh_name, sol_name;
-  mesh_name << "results/" << tag << ".mesh." << setfill('0') << setw(6) << myid;
-  sol_name  << "results/" << tag << ".sol."  << setfill('0') << setw(6) << myid;
+  mesh_name << "mesh." << setfill('0') << setw(6) << myid;
+  sol_name << "sol." << setfill('0') << setw(6) << myid;
+
+  ofstream mesh_ofs(mesh_name.str().c_str());
+  mesh_ofs.precision(8);
+  pmesh.Print(mesh_ofs);
 
   ofstream sol_ofs(sol_name.str().c_str());
   sol_ofs.precision(8);

@@ -92,22 +92,23 @@ static double SampledValueAtGlobal(const ParGridFunction &gf, const Vector &c0,
   return (glob_cnt > 0) ? (glob_sum / glob_cnt) : 0.0;
 }
 
-// global relative L2 on elements with attribute == small_attr
 static double ComputeRelL2_OnAttribute(const ParGridFunction &phi,
                                        const ParGridFunction &exact_gf,
-                                       ParMesh &pmesh, int small_attr)
+                                       ParMesh &pmesh, int small_attr_idx)
 {
-  Array<int> elems;
-  elems.Reserve(pmesh.GetNE());
-  for (int e = 0; e < pmesh.GetNE(); ++e) {
-    if (pmesh.GetAttribute(e) == small_attr) elems.Append(e);
-  }
+  // small_attr_idx is 0-based: 0 -> attribute ID 1, 1 -> attribute ID 2, ...
+  Array<int> attr_marker(pmesh.attributes.Max());
+  attr_marker = 0;
+
+  MFEM_ASSERT(small_attr_idx >= 0 && small_attr_idx < attr_marker.Size(),
+              "small_attr index out of range.");
+  attr_marker[small_attr_idx] = 1;
 
   GridFunctionCoefficient exact_coef(&exact_gf);
   ConstantCoefficient zero_c(0.0);
 
-  const double num = phi.ComputeL2Error(exact_coef, /*irs*/nullptr, &elems);
-  const double den = exact_gf.ComputeL2Error(zero_c, /*irs*/nullptr, &elems);
+  const double num = phi.ComputeL2Error(exact_coef, /*irs*/nullptr, &attr_marker);
+  const double den = exact_gf.ComputeL2Error(zero_c,    /*irs*/nullptr, &attr_marker);
 
   return (den > 0.0) ? (num / den) : 0.0;
 }
@@ -144,9 +145,8 @@ static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int smal
 
   // Create submesh containing only 'small_attr'
   Array<int> marker(pmesh.attributes.Max()); marker = 0;
-  marker[small_attr - 1] = 1;
+  marker[small_attr] = 1;
   ParSubMesh psub = ParSubMesh::CreateFromDomain(pmesh, marker);
-  psub.SetCurvature(std::max(1, order), false, psub.Dimension(), Ordering::byVDIM);
 
   // FE space and transfers on the submesh
   H1_FECollection sfec(order, psub.Dimension());
@@ -157,7 +157,6 @@ static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int smal
   psub.Transfer(phi_shifted,  phi_sm);
   psub.Transfer(exact_shifted, exact_sm);
 
-  // Residual fields for visualization (no L2 norm computation here)
   ParGridFunction resid_sm(&sfes);
   RelErrSignedCoefficient rcoef(phi_sm, exact_sm, 1e-14);
   resid_sm.ProjectCoefficient(rcoef);
@@ -236,8 +235,8 @@ int main(int argc, char *argv[])
 
   const char *mesh_file = "mesh/simple_3d_ref.msh";
   int order = 2;
-  int small_attr = 1;
-  int large_attr = 2;
+  int small_attr = 0;
+  int large_attr = 1;
 
   double rho_small_dim = 5000.0;
   double rho_large_dim = 0.0;
@@ -250,22 +249,22 @@ int main(int argc, char *argv[])
   bool visualization       = false;
   bool dimensional_output  = false;
 
-  // Inner sphere radius (default 0.7)
-  double inner_radius = 0.7;
+  enum BcType { BC_DIRICHLET = 0, BC_NEUMANN = 1 };
+  int bc = BC_DIRICHLET;
 
   // ---- CLI ----
   OptionsParser args(argc, argv);
   args.AddOption(&mesh_file, "-m", "--mesh", "Gmsh mesh file (.msh).");
   args.AddOption(&order, "-o", "--order", "H1 FE order.");
-  args.AddOption(&small_attr, "--attr-small", "-as", "Attribute id of small region (>=1).");
-  args.AddOption(&large_attr, "--attr-large", "-al", "Attribute id of large region (>=1).");
+  args.AddOption(&bc, "-bc", "--bc",
+               "Boundary condition: 0 = Dirichlet(0) on outer boundary, "
+               "1 = Neumann(0) (natural/no boundary treatment).");
   args.AddOption(&rho_small_dim, "--rho-small", "-rs", "Dimensional rho in small region.");
   args.AddOption(&rho_large_dim, "--rho-large", "-rl", "Dimensional rho in large region.");
   args.AddOption(&G_dim, "--G", "-G", "Gravitational constant.");
   args.AddOption(&L_scale, "--L", "-L", "Length scale.");
   args.AddOption(&T_scale, "--T", "-T", "Time scale.");
   args.AddOption(&RHO_scale, "--RHO", "-RHO", "Density scale.");
-  args.AddOption(&inner_radius, "-ir", "--inner-radius", "Inner sphere radius a (default 0.7).");
   args.AddOption(&dimensional_output,
                  "-dim", "--dimensional-output",
                  "-no-dim", "--no-dimensional-output",
@@ -283,7 +282,12 @@ int main(int argc, char *argv[])
   Nondimensionalisation nd(L_scale, T_scale, RHO_scale);
   const double rho_small_nd = nd.ScaleDensity(rho_small_dim);
   const double rho_large_nd = nd.ScaleDensity(rho_large_dim);
-  const double G_nd         = G_dim * T_scale * T_scale * RHO_scale;
+  const double G_nd = G_dim * T_scale * T_scale * RHO_scale;
+  real_t c = -4.0 * M_PI * G_dim * RHO_scale * T_scale * T_scale;
+  if (myid == 0)
+  {
+      cout<<"RHS dimensionless number c = "<<c<<endl;
+  }
 
   // ---- Mesh / FES ----
   Mesh mesh(mesh_file, 1, 1, true);
@@ -294,43 +298,58 @@ int main(int argc, char *argv[])
 
   H1_FECollection fec(order, dim);
   ParFiniteElementSpace fes(&pmesh, &fec);
+  HYPRE_BigInt size = fes.GlobalTrueVSize();
+  if (myid == 0) { cout << "Global true dofs: " << size << endl; }
 
   Array<int> ess_tdof_list;
-  if (pmesh.bdr_attributes.Size()) {
-    Array<int> ess_bdr(pmesh.bdr_attributes.Max()); ess_bdr = 0;
-    pmesh.MarkExternalBoundaries(ess_bdr);
-    fes.GetEssentialTrueDofs(ess_bdr, ess_tdof_list);
+  if (bc == BC_DIRICHLET && pmesh.bdr_attributes.Size()) {
+      Array<int> ess_bdr(pmesh.bdr_attributes.Max()); ess_bdr = 0;
+      pmesh.MarkExternalBoundaries(ess_bdr);
+      fes.GetEssentialTrueDofs(ess_bdr, ess_tdof_list);
   }
 
   auto Tsetup = since(Tsetup0);
 
-  // ---- RHS: -4πG ρ ----
+  // ---- RHS: -4πG rho ----
   Vector rho_vals(pmesh.attributes.Max()); rho_vals = 0.0;
-  rho_vals(small_attr - 1) = rho_small_nd;
-  rho_vals(large_attr - 1) = rho_large_nd;
+  rho_vals(small_attr) = rho_small_nd;
+  rho_vals(large_attr) = rho_large_nd;
   PWConstCoefficient rho_pw(rho_vals);
 
-  ConstantCoefficient minus_four_pi_G(-4.0 * M_PI * G_nd);
-  ProductCoefficient rhs_coeff(minus_four_pi_G, rho_pw);
+  ProductCoefficient rhs_coeff(c, rho_pw);
 
   auto Tasm0 = clk::now();
 
   ParLinearForm b(&fes);
   b.AddDomainIntegrator(new DomainLFIntegrator(rhs_coeff));
-  b.Assemble();
-
-  ParGridFunction phi(&fes); phi = 0.0;
+  b.Assemble(); 
 
   ConstantCoefficient one(1.0);
   ParBilinearForm a(&fes);
   a.AddDomainIntegrator(new DiffusionIntegrator(one));
   a.Assemble();
 
+  if (bc == BC_NEUMANN) {
+      ParLinearForm L(&fes);
+      ConstantCoefficient one_c(1.0);
+      L.AddDomainIntegrator(new DomainLFIntegrator(one_c));
+      L.Assemble();
+
+      ParGridFunction z(&fes); z = 1.0;
+      const double volume = L(z);   
+      const double f_int  = b(z);  
+
+      if (volume != 0.0) {
+          b.Add(-(f_int/volume), L);
+      }
+  }
+
   auto Tasm = since(Tasm0);
 
   // ---- Solve ----
   auto Tsolve0 = clk::now();
 
+  ParGridFunction phi(&fes); phi = 0.0;
   OperatorPtr A; Vector B, X;
   a.FormLinearSystem(ess_tdof_list, phi, b, A, X, B);
 
@@ -341,7 +360,14 @@ int main(int argc, char *argv[])
   cg.SetPrintLevel(myid==0 ? 1 : 0);
   cg.SetPreconditioner(amg);
   cg.SetOperator(*A);
-  cg.Mult(B, X);
+
+  if (bc == BC_NEUMANN) {
+      OrthoSolver ortho(MPI_COMM_WORLD);
+      ortho.SetSolver(cg);      
+      ortho.Mult(B, X);         
+  } else {
+      cg.Mult(B, X);       
+  }
 
   a.RecoverFEMSolution(X, b, phi);
 
@@ -352,50 +378,47 @@ int main(int argc, char *argv[])
 
   // Centroid of SMALL region (attribute small_attr)
   Array<int> small_marker(pmesh.attributes.Max()); small_marker = 0;
-  small_marker[small_attr - 1] = 1;
+  small_marker[small_attr] = 1;
   Vector c0 = mfemElasticity::MeshCentroid(&pmesh, small_marker, /*order*/1);
+  if (myid == 0) { cout << "centroid (small region): "; c0.Print(cout); }
 
-  // Adaptive sampling radius: min element "diameter" on the small region
-  double h_small = std::numeric_limits<double>::infinity();
-  for (int e = 0; e < pmesh.GetNE(); ++e) {
-    if (pmesh.GetAttribute(e) != small_attr) continue;
-    h_small = std::min(h_small, pmesh.GetElementSize(e, 1)); // 1 = diameter-like metric
-  }
-  double h_small_glob = h_small;
-  MPI_Allreduce(&h_small, &h_small_glob, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
-
-  const double r_eps = 0.3 * h_small_glob; // assumed finite; no lower guard
-  const int    nsmp  = 24;
-
-  // Subtract gauge from numerical solution via ring average at centroid
-  const double phi_c = SampledValueAtGlobal(phi, c0, r_eps, nsmp);
-  phi -= phi_c;
+  auto [found0, same0, r0] = mfemElasticity::SphericalBoundaryRadius(&pmesh, small_marker, c0);
+  if (myid == 0) { std::cout<<"r0: "<<r0<<std::endl; }
 
   // Analytic solution coefficient for a uniform sphere of radius 'inner_radius'
-  UniformSphereSolution base(dim, c0, inner_radius);
+  UniformSphereSolution base(dim, c0, r0);
   FunctionCoefficient base_exact = base.Coefficient();
 
   // Scale analytic coefficient by rho*G using a named ConstantCoefficient (lvalue)
-  ConstantCoefficient scale_pos(rho_small_nd * G_nd);
+  //ConstantCoefficient scale_pos(rho_small_nd * G_nd);
+  ConstantCoefficient scale_pos(-rho_small_nd * c / 4.0 / M_PI);
   ProductCoefficient exact_coeff_scaled(scale_pos, base_exact);
 
   // Project analytic to a gridfunction for L2 norms/plots
   ParGridFunction exact_gf(&fes); exact_gf = 0.0;
   exact_gf.ProjectCoefficient(exact_coeff_scaled);
 
+  auto phi_coef = GridFunctionCoefficient(&phi);
+
   // Subtract gauge from analytic solution by evaluating the coefficient exactly at centroid
+  const double phi_c0 = EvalCoefficientAtPointGlobal(phi_coef, pmesh, c0);
   const double exact_c0 = EvalCoefficientAtPointGlobal(exact_coeff_scaled, pmesh, c0);
+  if (Mpi::WorldRank() == 0) {
+      std::cout << std::setprecision(12)
+          << "[centre] phi(center)   = " << phi_c0 << "\n"
+          << "[centre] exact(center) = " << exact_c0 << std::endl;
+  }
+  phi -= phi_c0;
   exact_gf -= exact_c0;
 
-  // Shift (+1) if you want strictly positive outputs (optional; keeps parity with older scripts)
   ParGridFunction phi_out(&fes), exact_out(&fes);
   phi_out = phi; exact_out = exact_gf;
   phi_out  += 1.0;
   exact_out += 1.0;
 
   if (dimensional_output) {
-    nd.UnscaleGravityPotential(phi_out);
-    nd.UnscaleGravityPotential(exact_out);
+      nd.UnscaleGravityPotential(phi_out);
+      nd.UnscaleGravityPotential(exact_out);
   }
 
   // Global relative L2 on inner sphere (attribute == small_attr)

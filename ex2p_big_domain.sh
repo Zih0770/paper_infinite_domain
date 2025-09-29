@@ -3,9 +3,10 @@ set -euo pipefail
 
 # Config
 NP=8
-BIN=./bin/Poisson_big_domain
+BIN=./bin/ex2p
 ORDER=3
-BC=1   # 0 = Dirichlet(0), 1 = Neumann(0)  <-- force Neumann
+MTH=0         # always big-domain (Neumann)
+RES=1         # request L2 error print from the code
 
 # Mesh list and their b/a values
 declare -a MESHES=(
@@ -18,7 +19,7 @@ declare -a MESHES=(
   "mesh/simple_3d_12.msh"
 )
 
-# Compute b/a numbers (numeric) to go alongside the above meshes
+# b/a values (numeric) alongside the meshes above
 BA_REF=$(awk 'BEGIN{printf "%.10f\n",10/7}')  # ref: b=1.0, a=0.7
 declare -a BA_VALUES=(
   "$BA_REF"
@@ -32,7 +33,7 @@ declare -a BA_VALUES=(
 
 # Output summary
 mkdir -p results
-SUMMARY="results/big_domain_summary.tsv"
+SUMMARY="results/ex2p_big_domain_summary.tsv"
 echo -e "# b_over_a\tmean_relL2\tmean_solve_time[s]" > "$SUMMARY"
 
 # Sanity checks
@@ -40,13 +41,12 @@ if [[ ! -x "$BIN" ]]; then
   echo "Error: binary not found or not executable: $BIN" >&2
   exit 1
 fi
-
 if [[ ${#MESHES[@]} -ne ${#BA_VALUES[@]} ]]; then
   echo "Error: MESHES and BA_VALUES length mismatch." >&2
   exit 1
 fi
 
-# Run each mesh 20 times and average metrics
+# Run each mesh 20 times and average metrics (parse from stdout logs)
 for idx in "${!MESHES[@]}"; do
   MESH="${MESHES[$idx]}"
   BA="${BA_VALUES[$idx]}"
@@ -57,7 +57,7 @@ for idx in "${!MESHES[@]}"; do
     continue
   fi
 
-  echo ">> Running $TAG (b/a=$BA) with Neumann(0) (-bc ${BC}) 20 times..."
+  echo ">> Running $TAG (b/a=$BA) 20 times..."
 
   rel_sum=0.0
   solve_sum=0.0
@@ -65,30 +65,24 @@ for idx in "${!MESHES[@]}"; do
 
   for r in $(seq 1 $runs); do
     echo "   - run $r/$runs"
-    mpirun -np "$NP" "$BIN" \
-      -m "$MESH" \
-      -o "$ORDER" \
-      -bc "$BC" \
-      > "results/${TAG}.run${r}.log" 2>&1
+    LOG="results/${TAG}.run${r}.log"
+    mpirun -np "$NP" "$BIN" -mth "$MTH" -m "$MESH" -o "$ORDER" -res "$RES" > "$LOG" 2>&1
 
-    # Parse metrics immediately (files get overwritten each run, so read now)
-    REL_FILE="results/${TAG}.sm.relL2.txt"
-    TIM_FILE="results/${TAG}.timings.txt"
+    # Parse from program output:
+    #   "L2 error: <val>"
+    #   "Solver time: <val> s"
+    rel=$(awk '/^L2 error:[[:space:]]*/{print $3; found=1} END{if(!found) exit 1}' "$LOG" || echo "NaN")
+    solve=$(awk '/^Solver time:[[:space:]]*/{print $3; found=1} END{if(!found) exit 1}' "$LOG" || echo "NaN")
 
-    if [[ ! -f "$REL_FILE" || ! -f "$TIM_FILE" ]]; then
-      echo "     ! Missing results for $TAG on run $r — check logs: results/${TAG}.run${r}.log" >&2
+    if [[ "$rel" == "NaN" || "$solve" == "NaN" ]]; then
+      echo "     ! Could not parse metrics for $TAG run $r — check $LOG" >&2
       continue
     fi
 
-    rel=$(awk '{print $2}' "$REL_FILE")
-    solve=$(awk '/^solve[[:space:]]/{print $2}' "$TIM_FILE")
-
-    # Accumulate with awk to keep good precision
-    rel_sum=$(awk -v a="$rel_sum" -v b="$rel" 'BEGIN{printf "%.16f", a+b}')
+    rel_sum=$(awk -v a="$rel_sum" -v b="$rel"   'BEGIN{printf "%.16f", a+b}')
     solve_sum=$(awk -v a="$solve_sum" -v b="$solve" 'BEGIN{printf "%.16f", a+b}')
   done
 
-  # Means
   rel_mean=$(awk -v s="$rel_sum" -v n="$runs" 'BEGIN{printf "%.10e", s/n}')
   solve_mean=$(awk -v s="$solve_sum" -v n="$runs" 'BEGIN{printf "%.6f", s/n}')
 
