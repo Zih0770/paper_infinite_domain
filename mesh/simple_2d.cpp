@@ -179,8 +179,8 @@ int main(int argc, char** argv){
 
   gmsh::model::addPhysicalGroup(2,{v_small},1);
   gmsh::model::addPhysicalGroup(2,{v_ring}, 2);
-  gmsh::model::addPhysicalGroup(1,b1,11);
-  gmsh::model::addPhysicalGroup(1,b2,12);
+  gmsh::model::addPhysicalGroup(1,b1,1);
+  gmsh::model::addPhysicalGroup(1,b2,2);
 
   gmsh::option::setNumber("Mesh.ElementOrder", P.elemOrder);
   gmsh::option::setNumber("Mesh.Algorithm",    P.alg2D);

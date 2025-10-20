@@ -6,13 +6,11 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 #include <sstream>
 
 #include "uniform_sphere.hpp"
 #include "common.hpp"
 
-// DtN + mesh helpers
 #include "mfemElasticity.hpp"
 
 using namespace mfem;
@@ -23,8 +21,6 @@ using clk = std::chrono::steady_clock;
 constexpr real_t pi = atan(1) * 4.0;
 
 // ===================== Helpers =====================
-
-// Evaluate a Coefficient at a physical point x (global)
 static double EvalCoefficientAtPointGlobal(Coefficient &coef,
                                            ParMesh &pmesh,
                                            const Vector &x)
@@ -48,7 +44,6 @@ static double EvalCoefficientAtPointGlobal(Coefficient &coef,
   return glob_val;
 }
 
-// Ring+center sampling for gauge (global)
 static double SampledValueAtGlobal(const ParGridFunction &gf, const Vector &c0,
                                    double r, int n)
 {
@@ -69,10 +64,8 @@ static double SampledValueAtGlobal(const ParGridFunction &gf, const Vector &c0,
     }
   };
 
-  // center
   try_add(c0);
 
-  // small ring (x–y in 2D, x–z in 3D)
   const int dim = gf.ParFESpace()->GetParMesh()->Dimension();
   for (int k = 0; k < n; ++k) {
     const double th = 2.0 * pi * k / n;
@@ -92,7 +85,6 @@ static double ComputeRelL2_OnAttribute(const ParGridFunction &phi,
                                        const ParGridFunction &exact_gf,
                                        ParMesh &pmesh, int small_attr_idx)
 {
-  // small_attr_idx is 0-based: 0 -> attribute ID 1, 1 -> attribute ID 2, ...
   Array<int> attr_marker(pmesh.attributes.Max());
   attr_marker = 0;
 
@@ -109,7 +101,6 @@ static double ComputeRelL2_OnAttribute(const ParGridFunction &phi,
   return (den > 0.0) ? (num / den) : 0.0;
 }
 
-// residual coefficients for submesh vis
 struct RelErrSignedCoefficient : public Coefficient {
   const ParGridFunction &phi, &exact; double eps;
   RelErrSignedCoefficient(const ParGridFunction &ph, const ParGridFunction &ex, double e=1e-14)
@@ -129,7 +120,6 @@ struct LogAbsCoefficient : public Coefficient {
   }
 };
 
-// Save submesh (no L2 recomputation here)
 static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int small_attr,
                                      ParMesh &pmesh,
                                      const ParGridFunction &phi_field,
@@ -138,7 +128,6 @@ static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int smal
 {
   const int world_rank = Mpi::WorldRank();
 
-  // Create submesh containing only 'small_attr'
   Array<int> marker(pmesh.attributes.Max()); marker = 0;
   marker[small_attr] = 1;
   ParSubMesh psub = ParSubMesh::CreateFromDomain(pmesh, marker);
@@ -159,7 +148,6 @@ static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int smal
   LogAbsCoefficient logabs_coef(resid_sm, 1e-14);
   resid_logabs_sm.ProjectCoefficient(logabs_coef);
 
-  // Only ranks with submesh elements write
   const int has_local = (psub.GetNE() > 0) ? 1 : 0;
 
   MPI_Comm subcomm = MPI_COMM_NULL;
@@ -211,7 +199,6 @@ static void SaveOnSmallDomainSubmesh(const std::string &tag, int order, int smal
 }
 
 // =============================== main =====================================
-
 int main(int argc, char *argv[])
 {
   auto T0 = clk::now();
@@ -256,7 +243,6 @@ int main(int argc, char *argv[])
 
   auto since = [](clk::time_point a){ return std::chrono::duration<double>(clk::now()-a).count(); };
 
-  // ------------------------------ Setup -----------------------------------
   auto Tsetup0 = clk::now();
 
   Nondimensionalisation nd(L_scale, T_scale, RHO_scale);
@@ -275,7 +261,6 @@ int main(int argc, char *argv[])
 
   const int dim = pmesh.Dimension();
 
-  // centroid of small region
   Array<int> v1_marker(pmesh.attributes.Max()); v1_marker = 0;
   v1_marker[small_attr] = 1;
   Vector c0 = MeshCentroid(&pmesh, v1_marker, /*order*/1);
@@ -286,7 +271,6 @@ int main(int argc, char *argv[])
   HYPRE_BigInt size = fes.GlobalTrueVSize();
   if (myid == 0) { cout << "Global true dofs: " << size << endl; }
 
-  // External boundary marker (used for 2D tweak only)
   Array<int> ext_bdr;
   if (pmesh.bdr_attributes.Size()) {
     ext_bdr.SetSize(pmesh.bdr_attributes.Max());
@@ -294,16 +278,16 @@ int main(int argc, char *argv[])
     pmesh.MarkExternalBoundaries(ext_bdr);
   }
 
-  Array<int> ess_tdof_list{}; // no essential BCs with DtN
+  Array<int> ess_tdof_list{};
 
   auto Tsetup = since(Tsetup0);
-  // ------------------------------ Assembly --------------------------------
+
   Vector rho_vals(pmesh.attributes.Max()); rho_vals = 0.0;
   rho_vals(small_attr) = rho_small_nd;
   rho_vals(large_attr) = rho_large_nd;
   PWConstCoefficient rho_pw(rho_vals);
 
-  // RHS: -4π G_nd rho
+  // RHS: -4 pi G_nd rho
   ProductCoefficient rhs_coeff(c, rho_pw);
 
   auto Tasm0 = clk::now();
@@ -324,7 +308,6 @@ int main(int argc, char *argv[])
   b.AddDomainIntegrator(new DomainLFIntegrator(rhs_coeff));
   b.Assemble();
 
-  // 2D tweak: remove net source via uniform boundary load (kept for completeness)
   if (dim == 2 && pmesh.bdr_attributes.Size()) {
     ParGridFunction x1(&fes); x1 = 1.0;
 
@@ -352,7 +335,7 @@ int main(int argc, char *argv[])
   ParGridFunction phi(&fes); phi = 0.0;
 
   OperatorPtr A; Vector B, X;
-  a.FormLinearSystem(ess_tdof_list, phi, b, A, X, B); // A is HypreParMatrix via OperatorPtr
+  a.FormLinearSystem(ess_tdof_list, phi, b, A, X, B); 
 
   // Add DtN (RAP to true-dof space) to the stiffness
   auto rap = dtn.RAP();
@@ -370,7 +353,6 @@ int main(int argc, char *argv[])
   cg.SetPrintLevel(myid==0 ? 1 : 0);
 
   if (dim == 2) {
-      // Restore OrthoSolver in 2D
       OrthoSolver ortho(MPI_COMM_WORLD);
       ortho.SetSolver(cg);
       ortho.Mult(B, X);
@@ -387,7 +369,7 @@ int main(int argc, char *argv[])
 
   Array<int> b1_marker(pmesh.bdr_attributes.Max());
   b1_marker = 0;
-  b1_marker[11-1] = 1;
+  b1_marker[0] = 1;
   auto [found0, same0, r0] = SphericalBoundaryRadius(&pmesh, b1_marker, c0);
   if (myid == 0) { std::cout<<"r0: "<<r0<<std::endl; }
 
@@ -397,7 +379,6 @@ int main(int argc, char *argv[])
   ConstantCoefficient scale_pos(-rho_small_nd * c / 4.0 / pi);
   ProductCoefficient exact_coeff_scaled(scale_pos, base_exact);
 
-  // Project analytic to gridfunction
   ParGridFunction exact_gf(&fes); exact_gf = 0.0;
   exact_gf.ProjectCoefficient(exact_coeff_scaled);
 
@@ -416,7 +397,6 @@ int main(int argc, char *argv[])
     exact_gf -= exact_c;
   }
 
-  // Global relative L2 on inner sphere (attribute == small_attr)
   const std::string tag_base = std::filesystem::path(mesh_file).stem().string();
   std::ostringstream tag_ss;
   tag_ss << tag_base << "_DtN_lmax" << lmax;
@@ -467,7 +447,7 @@ int main(int argc, char *argv[])
     else          ss << "keys ilmc\n" << flush;
   }
 
-  delete As; // from a_shift.ParallelAssemble()
+  delete As; 
 
   return 0;
 }

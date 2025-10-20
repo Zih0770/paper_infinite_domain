@@ -1,18 +1,16 @@
 // src/Poisson_big_domain.cpp
 #include "mfem.hpp"
-#include <mpi.h>
+//#include <mpi.h>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 #include <sstream>
 
 #include "uniform_sphere.hpp"
 #include "common.hpp"
 
-// Use your mesh utilities
 #include "mfemElasticity/mesh.hpp"
 
 using namespace mfem;
@@ -389,7 +387,7 @@ int main(int argc, char *argv[])
 
   Array<int> b1_marker(pmesh.bdr_attributes.Max());
   b1_marker = 0;
-  b1_marker[11-1] = 1;
+  b1_marker[0] = 1;
   auto [found0, same0, r0] = mfemElasticity::SphericalBoundaryRadius(&pmesh, b1_marker, c0);
   if (myid == 0) { std::cout<<"r0: "<<r0<<std::endl; }
 

@@ -176,8 +176,8 @@ int main(int argc, char** argv){
 
   gmsh::model::addPhysicalGroup(3, {v_small}, 1);
   gmsh::model::addPhysicalGroup(3, {v_shell}, 2);
-  gmsh::model::addPhysicalGroup(2,  surf_small, 11);
-  gmsh::model::addPhysicalGroup(2,  surf_big,   12);
+  gmsh::model::addPhysicalGroup(2,  surf_small, 1);
+  gmsh::model::addPhysicalGroup(2,  surf_big,   2);
 
   gmsh::option::setNumber("Mesh.ElementOrder", P.elemOrder);
   gmsh::option::setNumber("Mesh.MshFileVersion", 2.2);
