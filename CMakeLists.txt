@@ -128,6 +128,7 @@ if(ENABLE_GMSH)
     mesh/offset_3d.cpp
     mesh/simple_2d.cpp
     mesh/simple_3d.cpp
+    mesh/ball.cpp
   )
   foreach(mesh_src ${MESH_GENERATORS})
     get_filename_component(exec_name ${mesh_src} NAME_WE)
