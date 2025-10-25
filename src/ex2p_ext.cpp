@@ -154,7 +154,9 @@ int main(int argc, char *argv[])
           if (myid == 0) {
               start_time = MPI_Wtime();
           }
+          if (myid == 0) cout<<"Hhh"<<endl;
           auto c = PoissonMultipoleOperator(MPI_COMM_WORLD, dfes.get(), &fes, lmax, dom_marker);
+          if (myid == 0) cout<<"Hii"<<endl;
           if (myid == 0) {
               end_time = MPI_Wtime();
               assembly_time = (end_time - start_time);
