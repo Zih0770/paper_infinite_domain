@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
               end_time = MPI_Wtime();
               assembly_time = (end_time - start_time);
           }
-          const real_t scale_lin = -(rho_small_nd * G) / (4.0 * pi);
+          const real_t scale_lin = rho_small_nd * G;
           c.AddMult(*u, b, -scale_lin);
       }
   }
