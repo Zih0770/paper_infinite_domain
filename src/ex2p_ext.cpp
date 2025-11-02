@@ -154,9 +154,7 @@ int main(int argc, char *argv[])
           if (myid == 0) {
               start_time = MPI_Wtime();
           }
-          if (myid == 0) cout<<"Hhh"<<endl;
           auto c = PoissonMultipoleOperator(MPI_COMM_WORLD, dfes.get(), &fes, lmax, dom_marker);
-          if (myid == 0) cout<<"Hii"<<endl;
           if (myid == 0) {
               end_time = MPI_Wtime();
               assembly_time = (end_time - start_time);
@@ -165,8 +163,16 @@ int main(int argc, char *argv[])
           rhof.ProjectCoefficient(rhs_coeff); ///
           c.AddMult(rhof, b, -1);
       } else {
+          if (myid == 0) {
+              start_time = MPI_Wtime();
+          }
           auto c = PoissonLinearisedMultipoleOperator(MPI_COMM_WORLD, vfes.get(), &fes, lmax);
-          c.AddMult(*u, b, -1);
+          if (myid == 0) {
+              end_time = MPI_Wtime();
+              assembly_time = (end_time - start_time);
+          }
+          const real_t scale_lin = -(rho_small_nd * G) / (4.0 * pi);
+          c.AddMult(*u, b, -scale_lin);
       }
   }
 
@@ -235,7 +241,7 @@ int main(int argc, char *argv[])
       }
       solver.SetOperator(A);
       solver.SetPreconditioner(P);
-      if (method == 10 || method == 1) {
+      if (method == 10) {
           solver.Mult(B, X);
       } else {
           auto orthoSolver = OrthoSolver(MPI_COMM_WORLD);
