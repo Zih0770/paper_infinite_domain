@@ -101,6 +101,10 @@ add_executable(ex2p_ext src/ex2p_ext.cpp)
 target_include_directories(ex2p_ext PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(ex2p_ext PRIVATE ${MFEM_TARGET} MPI::MPI_CXX)
 
+add_executable(ex2p_prem src/ex2p_prem.cpp)
+target_include_directories(ex2p_prem PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(ex2p_prem PRIVATE ${MFEM_TARGET} MPI::MPI_CXX)
+
 add_executable(ex2p_0 src/ex2p_0.cpp)
 target_include_directories(ex2p_0 PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(ex2p_0 PRIVATE ${MFEM_TARGET} MPI::MPI_CXX)
@@ -128,6 +132,7 @@ if(ENABLE_GMSH)
     mesh/offset_3d.cpp
     mesh/simple_2d.cpp
     mesh/simple_3d.cpp
+    mesh/prem.cpp
   )
   foreach(mesh_src ${MESH_GENERATORS})
     get_filename_component(exec_name ${mesh_src} NAME_WE)

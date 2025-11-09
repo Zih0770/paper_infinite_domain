@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
   Array<int> ess_tdof_list{};
   if (method == 10) fes.GetEssentialTrueDofs(boundary_marker, ess_tdof_list);
 
-  if (method == 0) { 
+  /*if (method == 0) { 
       ParLinearForm ll(&fes);
       ConstantCoefficient onee(1.0);
       ll.AddDomainIntegrator(new DomainLFIntegrator(onee));
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
       const real_t fint   = b(zz);  
 
       b.Add(-(fint/volume), ll);   
-  }
+  }*/
 
   HypreParMatrix A;
   Vector B, X;
@@ -281,28 +281,6 @@ int main(int argc, char *argv[])
   auto y = ParGridFunction(&fes);
   y.ProjectCoefficient(exact_coeff);
   y -= y_c;
-
-  //auto dif = ParGridFunction(&x);
-  //dif -= y;
-
-/*
-  auto y = ParGridFunction(&fes); ///
-  y.ProjectCoefficient(exact_coeff);
-  x -= y;
-
-  {
-    auto l = ParLinearForm(&fes);
-    auto z = ParGridFunction(&fes);
-    z = 1.0;
-    auto one = ConstantCoefficient(1);
-    l.AddDomainIntegrator(new DomainLFIntegrator(one));
-    l.Assemble();
-    auto area = l(z);
-    l /= area;
-    auto px = l(x);
-    x -= px;
-  }
-*/
 
   auto submesh = ParSubMesh::CreateFromDomain(pmesh, dom_marker);
   auto subfes = ParFiniteElementSpace(&submesh, &fec);
