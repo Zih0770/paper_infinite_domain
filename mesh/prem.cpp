@@ -38,7 +38,7 @@ std::vector<double> extractLayerBoundaries(const std::string &fileName, double& 
         }
     }
     radii.push_back(previousRadius);
-    R = radii.back();
+    if (R < 0) R = radii.back();
     double fac = 1.2;
     double radius_max = fac * R;
     radii.push_back(radius_max);
@@ -341,7 +341,8 @@ int main(int argc, char **argv) {
         }
     }
 
-    double R;
+    //double R = -1.0;
+    double R = 6371e3;
     std::vector<double> radii = extractLayerBoundaries(inputFileName, R);
     meshSizeMin /= R;
     meshSizeMax /= R;

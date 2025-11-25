@@ -343,6 +343,13 @@ Topography::Topography(const std::string& xyzFile, double Rref) : _Rref(Rref) {
   std::vector<double> L, B, V;
   if (!LoadXYZ(xyzFile, L, B, V))
     throw std::runtime_error("Topography: cannot read " + xyzFile);
+
+  for (double &lon : L) {
+    lon = std::fmod(lon + 180.0, 360.0);
+    if (lon < 0) lon += 360.0;
+    lon -= 180.0;
+  }
+
   for (double& v : V) v /= _Rref;
   BuildGrid(L, B, V);
 }
@@ -586,3 +593,5 @@ void PerturbAllNodes(const RadialMapping& mapping) {
     gmsh::model::mesh::setNode(tags[i], {x, y, z}, {});
   }
 }
+
+

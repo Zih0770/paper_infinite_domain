@@ -1,0 +1,201 @@
+/usr/bin/cmake -S/home/sssou/paper_infinite_domain -B/home/sssou/paper_infinite_domain/build --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/cmake -E cmake_progress_start /home/sssou/paper_infinite_domain/build/CMakeFiles /home/sssou/paper_infinite_domain/build//CMakeFiles/progress.marks
+/usr/bin/gmake  -f CMakeFiles/Makefile2 all
+gmake[1]: Entering directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/meshgeom.dir/build.make CMakeFiles/meshgeom.dir/depend
+/usr/bin/gmake  -f CMakeFiles/ex2p.dir/build.make CMakeFiles/ex2p.dir/depend
+/usr/bin/gmake  -f CMakeFiles/ex2p_ext.dir/build.make CMakeFiles/ex2p_ext.dir/depend
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p.dir/DependInfo.cmake "--color="
+/usr/bin/gmake  -f CMakeFiles/ex2p_prem.dir/build.make CMakeFiles/ex2p_prem.dir/depend
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/meshgeom.dir/DependInfo.cmake "--color="
+/usr/bin/gmake  -f CMakeFiles/ex2p_Phobos.dir/build.make CMakeFiles/ex2p_Phobos.dir/depend
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_prem.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_ext.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_Phobos.dir/DependInfo.cmake "--color="
+/usr/bin/gmake  -f CMakeFiles/ex2p_0.dir/build.make CMakeFiles/ex2p_0.dir/depend
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_0.dir/DependInfo.cmake "--color="
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/ex2p_prem.dir/build.make CMakeFiles/ex2p_prem.dir/build
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/ex2p.dir/build.make CMakeFiles/ex2p.dir/build
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/ex2p_Phobos.dir/build.make CMakeFiles/ex2p_Phobos.dir/build
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/ex2p_0.dir/build.make CMakeFiles/ex2p_0.dir/build
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/meshgeom.dir/build.make CMakeFiles/meshgeom.dir/build
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/ex2p_ext.dir/build.make CMakeFiles/ex2p_ext.dir/build
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+[  8%] Building CXX object CMakeFiles/ex2p.dir/src/ex2p.cpp.o
+[  8%] Building CXX object CMakeFiles/ex2p_prem.dir/src/ex2p_prem.cpp.o
+/usr/bin/c++  -I/home/sssou/paper_infinite_domain/src -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/ex2p_prem.dir/src/ex2p_prem.cpp.o -MF CMakeFiles/ex2p_prem.dir/src/ex2p_prem.cpp.o.d -o CMakeFiles/ex2p_prem.dir/src/ex2p_prem.cpp.o -c /home/sssou/paper_infinite_domain/src/ex2p_prem.cpp
+/usr/bin/c++  -I/home/sssou/paper_infinite_domain/src -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/ex2p.dir/src/ex2p.cpp.o -MF CMakeFiles/ex2p.dir/src/ex2p.cpp.o.d -o CMakeFiles/ex2p.dir/src/ex2p.cpp.o -c /home/sssou/paper_infinite_domain/src/ex2p.cpp
+[ 12%] Building CXX object CMakeFiles/ex2p_Phobos.dir/src/ex2p_Phobos.cpp.o
+/usr/bin/c++  -I/home/sssou/paper_infinite_domain/src -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/ex2p_Phobos.dir/src/ex2p_Phobos.cpp.o -MF CMakeFiles/ex2p_Phobos.dir/src/ex2p_Phobos.cpp.o.d -o CMakeFiles/ex2p_Phobos.dir/src/ex2p_Phobos.cpp.o -c /home/sssou/paper_infinite_domain/src/ex2p_Phobos.cpp
+[ 16%] Building CXX object CMakeFiles/ex2p_0.dir/src/ex2p_0.cpp.o
+/usr/bin/c++  -I/home/sssou/paper_infinite_domain/src -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/ex2p_0.dir/src/ex2p_0.cpp.o -MF CMakeFiles/ex2p_0.dir/src/ex2p_0.cpp.o.d -o CMakeFiles/ex2p_0.dir/src/ex2p_0.cpp.o -c /home/sssou/paper_infinite_domain/src/ex2p_0.cpp
+[ 20%] Building CXX object CMakeFiles/meshgeom.dir/mesh/common.cpp.o
+/usr/bin/c++  -I/home/sssou/paper_infinite_domain/mesh -I/home/sssou/local/gmsh/include -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/meshgeom.dir/mesh/common.cpp.o -MF CMakeFiles/meshgeom.dir/mesh/common.cpp.o.d -o CMakeFiles/meshgeom.dir/mesh/common.cpp.o -c /home/sssou/paper_infinite_domain/mesh/common.cpp
+[ 24%] Building CXX object CMakeFiles/meshgeom.dir/mesh/CircularMesh.cpp.o
+[ 28%] Building CXX object CMakeFiles/ex2p_ext.dir/src/ex2p_ext.cpp.o
+/usr/bin/c++  -I/home/sssou/paper_infinite_domain/src -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/ex2p_ext.dir/src/ex2p_ext.cpp.o -MF CMakeFiles/ex2p_ext.dir/src/ex2p_ext.cpp.o.d -o CMakeFiles/ex2p_ext.dir/src/ex2p_ext.cpp.o -c /home/sssou/paper_infinite_domain/src/ex2p_ext.cpp
+/usr/bin/c++  -I/home/sssou/paper_infinite_domain/mesh -I/home/sssou/local/gmsh/include -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/meshgeom.dir/mesh/CircularMesh.cpp.o -MF CMakeFiles/meshgeom.dir/mesh/CircularMesh.cpp.o.d -o CMakeFiles/meshgeom.dir/mesh/CircularMesh.cpp.o -c /home/sssou/paper_infinite_domain/mesh/CircularMesh.cpp
+[ 32%] Linking CXX static library lib/libmeshgeom.a
+/usr/bin/cmake -P CMakeFiles/meshgeom.dir/cmake_clean_target.cmake
+/usr/bin/cmake -E cmake_link_script CMakeFiles/meshgeom.dir/link.txt --verbose=1
+/usr/bin/ar qc lib/libmeshgeom.a CMakeFiles/meshgeom.dir/mesh/common.cpp.o CMakeFiles/meshgeom.dir/mesh/CircularMesh.cpp.o
+/usr/bin/ranlib lib/libmeshgeom.a
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+[ 32%] Built target meshgeom
+/usr/bin/gmake  -f CMakeFiles/offset_2d.dir/build.make CMakeFiles/offset_2d.dir/depend
+/usr/bin/gmake  -f CMakeFiles/offset_3d.dir/build.make CMakeFiles/offset_3d.dir/depend
+/usr/bin/gmake  -f CMakeFiles/simple_2d.dir/build.make CMakeFiles/simple_2d.dir/depend
+/usr/bin/gmake  -f CMakeFiles/simple_3d.dir/build.make CMakeFiles/simple_3d.dir/depend
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/offset_2d.dir/DependInfo.cmake "--color="
+/usr/bin/gmake  -f CMakeFiles/prem.dir/build.make CMakeFiles/prem.dir/depend
+/usr/bin/gmake  -f CMakeFiles/MeshingPhobos.dir/build.make CMakeFiles/MeshingPhobos.dir/depend
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/simple_2d.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/simple_3d.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/prem.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/offset_3d.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/MeshingPhobos.dir/DependInfo.cmake "--color="
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/offset_3d.dir/build.make CMakeFiles/offset_3d.dir/build
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/offset_2d.dir/build.make CMakeFiles/offset_2d.dir/build
+/usr/bin/gmake  -f CMakeFiles/simple_2d.dir/build.make CMakeFiles/simple_2d.dir/build
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/simple_3d.dir/build.make CMakeFiles/simple_3d.dir/build
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/prem.dir/build.make CMakeFiles/prem.dir/build
+/usr/bin/gmake  -f CMakeFiles/MeshingPhobos.dir/build.make CMakeFiles/MeshingPhobos.dir/build
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+[ 36%] Building CXX object CMakeFiles/simple_2d.dir/mesh/simple_2d.cpp.o
+[ 40%] Building CXX object CMakeFiles/offset_3d.dir/mesh/offset_3d.cpp.o
+/usr/bin/c++  -I/home/sssou/local/gmsh/include -I/home/sssou/paper_infinite_domain/mesh -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/simple_2d.dir/mesh/simple_2d.cpp.o -MF CMakeFiles/simple_2d.dir/mesh/simple_2d.cpp.o.d -o CMakeFiles/simple_2d.dir/mesh/simple_2d.cpp.o -c /home/sssou/paper_infinite_domain/mesh/simple_2d.cpp
+/usr/bin/c++  -I/home/sssou/local/gmsh/include -I/home/sssou/paper_infinite_domain/mesh -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/offset_3d.dir/mesh/offset_3d.cpp.o -MF CMakeFiles/offset_3d.dir/mesh/offset_3d.cpp.o.d -o CMakeFiles/offset_3d.dir/mesh/offset_3d.cpp.o -c /home/sssou/paper_infinite_domain/mesh/offset_3d.cpp
+[ 44%] Building CXX object CMakeFiles/offset_2d.dir/mesh/offset_2d.cpp.o
+[ 48%] Building CXX object CMakeFiles/simple_3d.dir/mesh/simple_3d.cpp.o
+/usr/bin/c++  -I/home/sssou/local/gmsh/include -I/home/sssou/paper_infinite_domain/mesh -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/offset_2d.dir/mesh/offset_2d.cpp.o -MF CMakeFiles/offset_2d.dir/mesh/offset_2d.cpp.o.d -o CMakeFiles/offset_2d.dir/mesh/offset_2d.cpp.o -c /home/sssou/paper_infinite_domain/mesh/offset_2d.cpp
+/usr/bin/c++  -I/home/sssou/local/gmsh/include -I/home/sssou/paper_infinite_domain/mesh -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/simple_3d.dir/mesh/simple_3d.cpp.o -MF CMakeFiles/simple_3d.dir/mesh/simple_3d.cpp.o.d -o CMakeFiles/simple_3d.dir/mesh/simple_3d.cpp.o -c /home/sssou/paper_infinite_domain/mesh/simple_3d.cpp
+[ 52%] Building CXX object CMakeFiles/prem.dir/mesh/prem.cpp.o
+/usr/bin/c++  -I/home/sssou/local/gmsh/include -I/home/sssou/paper_infinite_domain/mesh -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/prem.dir/mesh/prem.cpp.o -MF CMakeFiles/prem.dir/mesh/prem.cpp.o.d -o CMakeFiles/prem.dir/mesh/prem.cpp.o -c /home/sssou/paper_infinite_domain/mesh/prem.cpp
+[ 56%] Building CXX object CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o
+/usr/bin/c++  -I/home/sssou/local/gmsh/include -I/home/sssou/paper_infinite_domain/mesh -isystem /home/sssou/source/ginkgo/installed/include -isystem /home/sssou/source/sundials/installed/include -isystem /home/sssou/source/amgx/installed/include -isystem /home/sssou/source/raja/installed/include -isystem /usr/local/cuda/include -isystem /usr/local/cuda/targets/x86_64-linux/include -isystem /home/sssou/source/petsc/include -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -std=gnu++20 -MD -MT CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o -MF CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o.d -o CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o -c /home/sssou/paper_infinite_domain/mesh/MeshingPhobos.cpp
+[ 60%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/offset_2d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/offset_2d.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG CMakeFiles/offset_2d.dir/mesh/offset_2d.cpp.o -o /home/sssou/paper_infinite_domain/bin/offset_2d  -Wl,-rpath,/home/sssou/local/gmsh/lib /home/sssou/local/gmsh/lib/libgmsh.so lib/libmeshgeom.a 
+[ 64%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/prem
+/usr/bin/cmake -E cmake_link_script CMakeFiles/prem.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG CMakeFiles/prem.dir/mesh/prem.cpp.o -o /home/sssou/paper_infinite_domain/bin/prem  -Wl,-rpath,/home/sssou/local/gmsh/lib /home/sssou/local/gmsh/lib/libgmsh.so lib/libmeshgeom.a 
+[ 68%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/simple_2d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/simple_2d.dir/link.txt --verbose=1
+[ 72%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/offset_3d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/offset_3d.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG CMakeFiles/simple_2d.dir/mesh/simple_2d.cpp.o -o /home/sssou/paper_infinite_domain/bin/simple_2d  -Wl,-rpath,/home/sssou/local/gmsh/lib /home/sssou/local/gmsh/lib/libgmsh.so lib/libmeshgeom.a 
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG CMakeFiles/offset_3d.dir/mesh/offset_3d.cpp.o -o /home/sssou/paper_infinite_domain/bin/offset_3d  -Wl,-rpath,/home/sssou/local/gmsh/lib /home/sssou/local/gmsh/lib/libgmsh.so lib/libmeshgeom.a 
+[ 76%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/simple_3d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/simple_3d.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG CMakeFiles/simple_3d.dir/mesh/simple_3d.cpp.o -o /home/sssou/paper_infinite_domain/bin/simple_3d  -Wl,-rpath,/home/sssou/local/gmsh/lib /home/sssou/local/gmsh/lib/libgmsh.so lib/libmeshgeom.a 
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+[ 76%] Built target prem
+[ 76%] Built target offset_3d
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+[ 76%] Built target offset_2d
+[ 76%] Built target simple_2d
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+[ 76%] Built target simple_3d
+[ 80%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/ex2p_0
+/usr/bin/cmake -E cmake_link_script CMakeFiles/ex2p_0.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -Wl,-rpath -Wl,/home/sssou/source/petsc/arch-opt/lib -Wl,--enable-new-dtags CMakeFiles/ex2p_0.dir/src/ex2p_0.cpp.o -o /home/sssou/paper_infinite_domain/bin/ex2p_0   -L/home/sssou/source/petsc/arch-opt/lib  -Wl,-rpath,/home/sssou/local/mfem/lib:/home/sssou/source/petsc/arch-opt/lib:/home/sssou/source/hypre/build/lib /home/sssou/local/mfem/lib/libmfem.so /home/sssou/source/petsc/arch-opt/lib/libmpi.so /home/sssou/source/hypre/build/lib/libHYPRE.so /home/sssou/source/mfemElasticity/installed/lib/libmfemElasticity.a -lceed 
+[ 84%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/ex2p_Phobos
+/usr/bin/cmake -E cmake_link_script CMakeFiles/ex2p_Phobos.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -Wl,-rpath -Wl,/home/sssou/source/petsc/arch-opt/lib -Wl,--enable-new-dtags CMakeFiles/ex2p_Phobos.dir/src/ex2p_Phobos.cpp.o -o /home/sssou/paper_infinite_domain/bin/ex2p_Phobos   -L/home/sssou/source/petsc/arch-opt/lib  -Wl,-rpath,/home/sssou/local/mfem/lib:/home/sssou/source/petsc/arch-opt/lib:/home/sssou/source/hypre/build/lib /home/sssou/local/mfem/lib/libmfem.so /home/sssou/source/petsc/arch-opt/lib/libmpi.so /home/sssou/source/hypre/build/lib/libHYPRE.so /home/sssou/source/mfemElasticity/installed/lib/libmfemElasticity.a -lceed 
+[ 88%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/ex2p_prem
+/usr/bin/cmake -E cmake_link_script CMakeFiles/ex2p_prem.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -Wl,-rpath -Wl,/home/sssou/source/petsc/arch-opt/lib -Wl,--enable-new-dtags CMakeFiles/ex2p_prem.dir/src/ex2p_prem.cpp.o -o /home/sssou/paper_infinite_domain/bin/ex2p_prem   -L/home/sssou/source/petsc/arch-opt/lib  -Wl,-rpath,/home/sssou/local/mfem/lib:/home/sssou/source/petsc/arch-opt/lib:/home/sssou/source/hypre/build/lib /home/sssou/local/mfem/lib/libmfem.so /home/sssou/source/petsc/arch-opt/lib/libmpi.so /home/sssou/source/hypre/build/lib/libHYPRE.so /home/sssou/source/mfemElasticity/installed/lib/libmfemElasticity.a -lceed 
+[ 92%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/ex2p
+/usr/bin/cmake -E cmake_link_script CMakeFiles/ex2p.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -Wl,-rpath -Wl,/home/sssou/source/petsc/arch-opt/lib -Wl,--enable-new-dtags CMakeFiles/ex2p.dir/src/ex2p.cpp.o -o /home/sssou/paper_infinite_domain/bin/ex2p   -L/home/sssou/source/petsc/arch-opt/lib  -Wl,-rpath,/home/sssou/local/mfem/lib:/home/sssou/source/petsc/arch-opt/lib:/home/sssou/source/hypre/build/lib /home/sssou/local/mfem/lib/libmfem.so /home/sssou/source/petsc/arch-opt/lib/libmpi.so /home/sssou/source/hypre/build/lib/libHYPRE.so /home/sssou/source/mfemElasticity/installed/lib/libmfemElasticity.a -lceed 
+[ 96%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/ex2p_ext
+/usr/bin/cmake -E cmake_link_script CMakeFiles/ex2p_ext.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG -Wl,-rpath -Wl,/home/sssou/source/petsc/arch-opt/lib -Wl,--enable-new-dtags CMakeFiles/ex2p_ext.dir/src/ex2p_ext.cpp.o -o /home/sssou/paper_infinite_domain/bin/ex2p_ext   -L/home/sssou/source/petsc/arch-opt/lib  -Wl,-rpath,/home/sssou/local/mfem/lib:/home/sssou/source/petsc/arch-opt/lib:/home/sssou/source/hypre/build/lib /home/sssou/local/mfem/lib/libmfem.so /home/sssou/source/petsc/arch-opt/lib/libmpi.so /home/sssou/source/hypre/build/lib/libHYPRE.so /home/sssou/source/mfemElasticity/installed/lib/libmfemElasticity.a -lceed 
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+[ 96%] Built target ex2p_0
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+[ 96%] Built target ex2p_Phobos
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+[ 96%] Built target ex2p_prem
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+[ 96%] Built target ex2p
+[ 96%] Built target ex2p_ext
+[100%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/MeshingPhobos
+/usr/bin/cmake -E cmake_link_script CMakeFiles/MeshingPhobos.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o -o /home/sssou/paper_infinite_domain/bin/MeshingPhobos  -Wl,-rpath,/home/sssou/local/gmsh/lib /home/sssou/local/gmsh/lib/libgmsh.so lib/libmeshgeom.a 
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: warning: relocation against `_ZN4mfem6Device16device_singletonE' in read-only section `.text._ZN4mfem6Vector9HostWriteEv[_ZN4mfem6Vector9HostWriteEv]'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::ReadWrite(bool)':
+MeshingPhobos.cpp:(.text._ZN4mfem6Vector9ReadWriteEb[_ZN4mfem6Vector9ReadWriteEb]+0x1b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9ReadWriteEb[_ZN4mfem6Vector9ReadWriteEb]+0x2b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9ReadWriteEb[_ZN4mfem6Vector9ReadWriteEb]+0x82): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9ReadWriteEb[_ZN4mfem6Vector9ReadWriteEb]+0xa7): undefined reference to `mfem::MemoryManager::ReadWrite_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::Write(bool)':
+MeshingPhobos.cpp:(.text._ZN4mfem6Vector5WriteEb[_ZN4mfem6Vector5WriteEb]+0x1b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector5WriteEb[_ZN4mfem6Vector5WriteEb]+0x2b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector5WriteEb[_ZN4mfem6Vector5WriteEb]+0x82): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector5WriteEb[_ZN4mfem6Vector5WriteEb]+0xa7): undefined reference to `mfem::MemoryManager::Write_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::Read(bool) const':
+MeshingPhobos.cpp:(.text._ZNK4mfem6Vector4ReadEb[_ZNK4mfem6Vector4ReadEb]+0x1b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector4ReadEb[_ZNK4mfem6Vector4ReadEb]+0x2b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector4ReadEb[_ZNK4mfem6Vector4ReadEb]+0x82): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector4ReadEb[_ZNK4mfem6Vector4ReadEb]+0xa7): undefined reference to `mfem::MemoryManager::Read_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::~Vector()':
+MeshingPhobos.cpp:(.text._ZN4mfem6VectorD0Ev[_ZN4mfem6VectorD5Ev]+0x57): undefined reference to `mfem::MemoryManager::Delete_(void*, mfem::MemoryType, unsigned int)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::~Vector()':
+MeshingPhobos.cpp:(.text._ZN4mfem6VectorD2Ev[_ZN4mfem6VectorD5Ev]+0x47): undefined reference to `mfem::MemoryManager::Delete_(void*, mfem::MemoryType, unsigned int)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::HostReadWrite()':
+MeshingPhobos.cpp:(.text._ZN4mfem6Vector13HostReadWriteEv[_ZN4mfem6Vector13HostReadWriteEv]+0x1f): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector13HostReadWriteEv[_ZN4mfem6Vector13HostReadWriteEv]+0x6a): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector13HostReadWriteEv[_ZN4mfem6Vector13HostReadWriteEv]+0x8f): undefined reference to `mfem::MemoryManager::ReadWrite_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::HostRead() const':
+MeshingPhobos.cpp:(.text._ZNK4mfem6Vector8HostReadEv[_ZNK4mfem6Vector8HostReadEv]+0x1f): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector8HostReadEv[_ZNK4mfem6Vector8HostReadEv]+0x6a): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector8HostReadEv[_ZNK4mfem6Vector8HostReadEv]+0x8f): undefined reference to `mfem::MemoryManager::Read_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::HostWrite()':
+MeshingPhobos.cpp:(.text._ZN4mfem6Vector9HostWriteEv[_ZN4mfem6Vector9HostWriteEv]+0x1f): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9HostWriteEv[_ZN4mfem6Vector9HostWriteEv]+0x6a): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9HostWriteEv[_ZN4mfem6Vector9HostWriteEv]+0x8f): undefined reference to `mfem::MemoryManager::Write_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE
+collect2: error: ld returned 1 exit status
+gmake[2]: *** [CMakeFiles/MeshingPhobos.dir/build.make:99: /home/sssou/paper_infinite_domain/bin/MeshingPhobos] Error 1
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[1]: *** [CMakeFiles/Makefile2:391: CMakeFiles/MeshingPhobos.dir/all] Error 2
+gmake[1]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake: *** [Makefile:91: all] Error 2

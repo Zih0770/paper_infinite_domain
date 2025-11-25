@@ -1,0 +1,176 @@
+/usr/bin/cmake -S/home/sssou/paper_infinite_domain -B/home/sssou/paper_infinite_domain/build --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/cmake -E cmake_progress_start /home/sssou/paper_infinite_domain/build/CMakeFiles /home/sssou/paper_infinite_domain/build//CMakeFiles/progress.marks
+/usr/bin/gmake  -f CMakeFiles/Makefile2 all
+gmake[1]: Entering directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/meshgeom.dir/build.make CMakeFiles/meshgeom.dir/depend
+/usr/bin/gmake  -f CMakeFiles/ex2p.dir/build.make CMakeFiles/ex2p.dir/depend
+/usr/bin/gmake  -f CMakeFiles/ex2p_ext.dir/build.make CMakeFiles/ex2p_ext.dir/depend
+/usr/bin/gmake  -f CMakeFiles/ex2p_prem.dir/build.make CMakeFiles/ex2p_prem.dir/depend
+/usr/bin/gmake  -f CMakeFiles/ex2p_Phobos.dir/build.make CMakeFiles/ex2p_Phobos.dir/depend
+/usr/bin/gmake  -f CMakeFiles/ex2p_0.dir/build.make CMakeFiles/ex2p_0.dir/depend
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/meshgeom.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_ext.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_prem.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_Phobos.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_0.dir/DependInfo.cmake "--color="
+Dependencies file "CMakeFiles/meshgeom.dir/mesh/CircularMesh.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/meshgeom.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/meshgeom.dir/mesh/common.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/meshgeom.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ex2p.dir/src/ex2p.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p.dir/compiler_depend.internal".
+Consolidate compiler generated dependencies of target meshgeom
+Dependencies file "CMakeFiles/ex2p_ext.dir/src/ex2p_ext.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_ext.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ex2p_prem.dir/src/ex2p_prem.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_prem.dir/compiler_depend.internal".
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/meshgeom.dir/build.make CMakeFiles/meshgeom.dir/build
+Dependencies file "CMakeFiles/ex2p_Phobos.dir/src/ex2p_Phobos.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_Phobos.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ex2p_0.dir/src/ex2p_0.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/ex2p_0.dir/compiler_depend.internal".
+Consolidate compiler generated dependencies of target ex2p
+Consolidate compiler generated dependencies of target ex2p_ext
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/ex2p.dir/build.make CMakeFiles/ex2p.dir/build
+Consolidate compiler generated dependencies of target ex2p_prem
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/ex2p_ext.dir/build.make CMakeFiles/ex2p_ext.dir/build
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/meshgeom.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+Consolidate compiler generated dependencies of target ex2p_Phobos
+Consolidate compiler generated dependencies of target ex2p_0
+/usr/bin/gmake  -f CMakeFiles/ex2p_prem.dir/build.make CMakeFiles/ex2p_prem.dir/build
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/ex2p_Phobos.dir/build.make CMakeFiles/ex2p_Phobos.dir/build
+/usr/bin/gmake  -f CMakeFiles/ex2p_0.dir/build.make CMakeFiles/ex2p_0.dir/build
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/ex2p.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/ex2p_ext.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/ex2p_prem.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/ex2p_Phobos.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+[ 12%] Built target meshgeom
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/ex2p_0.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/offset_2d.dir/build.make CMakeFiles/offset_2d.dir/depend
+/usr/bin/gmake  -f CMakeFiles/offset_3d.dir/build.make CMakeFiles/offset_3d.dir/depend
+/usr/bin/gmake  -f CMakeFiles/simple_2d.dir/build.make CMakeFiles/simple_2d.dir/depend
+/usr/bin/gmake  -f CMakeFiles/simple_3d.dir/build.make CMakeFiles/simple_3d.dir/depend
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/offset_2d.dir/DependInfo.cmake "--color="
+/usr/bin/gmake  -f CMakeFiles/prem.dir/build.make CMakeFiles/prem.dir/depend
+[ 24%] Built target ex2p
+[ 28%] Built target ex2p_ext
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/simple_2d.dir/DependInfo.cmake "--color="
+/usr/bin/gmake  -f CMakeFiles/MeshingPhobos.dir/build.make CMakeFiles/MeshingPhobos.dir/depend
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/offset_3d.dir/DependInfo.cmake "--color="
+[ 36%] Built target ex2p_prem
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/simple_3d.dir/DependInfo.cmake "--color="
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/MeshingPhobos.dir/DependInfo.cmake "--color="
+[ 44%] Built target ex2p_Phobos
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+cd /home/sssou/paper_infinite_domain/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build /home/sssou/paper_infinite_domain/build/CMakeFiles/prem.dir/DependInfo.cmake "--color="
+[ 52%] Built target ex2p_0
+Dependencies file "CMakeFiles/simple_2d.dir/mesh/simple_2d.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/simple_2d.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/simple_3d.dir/mesh/simple_3d.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/simple_3d.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/offset_2d.dir/mesh/offset_2d.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/offset_2d.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/prem.dir/mesh/prem.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/prem.dir/compiler_depend.internal".
+Consolidate compiler generated dependencies of target simple_2d
+Consolidate compiler generated dependencies of target simple_3d
+Dependencies file "CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/MeshingPhobos.dir/compiler_depend.internal".
+Consolidate compiler generated dependencies of target offset_2d
+Dependencies file "CMakeFiles/offset_3d.dir/mesh/offset_3d.cpp.o.d" is newer than depends file "/home/sssou/paper_infinite_domain/build/CMakeFiles/offset_3d.dir/compiler_depend.internal".
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/simple_2d.dir/build.make CMakeFiles/simple_2d.dir/build
+Consolidate compiler generated dependencies of target prem
+/usr/bin/gmake  -f CMakeFiles/simple_3d.dir/build.make CMakeFiles/simple_3d.dir/build
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/offset_2d.dir/build.make CMakeFiles/offset_2d.dir/build
+Consolidate compiler generated dependencies of target offset_3d
+/usr/bin/gmake  -f CMakeFiles/prem.dir/build.make CMakeFiles/prem.dir/build
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/offset_3d.dir/build.make CMakeFiles/offset_3d.dir/build
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/simple_2d.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+Consolidate compiler generated dependencies of target MeshingPhobos
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/offset_2d.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/simple_3d.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/prem.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+/usr/bin/gmake  -f CMakeFiles/MeshingPhobos.dir/build.make CMakeFiles/MeshingPhobos.dir/build
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Nothing to be done for 'CMakeFiles/offset_3d.dir/build'.
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[2]: Entering directory '/home/sssou/paper_infinite_domain/build'
+[ 60%] Built target simple_2d
+[ 68%] Built target offset_2d
+[ 76%] Built target simple_3d
+[ 84%] Built target prem
+[ 92%] Built target offset_3d
+[ 96%] Linking CXX executable /home/sssou/paper_infinite_domain/bin/MeshingPhobos
+/usr/bin/cmake -E cmake_link_script CMakeFiles/MeshingPhobos.dir/link.txt --verbose=1
+/usr/bin/c++ -I/home/sssou/source/mfemElasticity/installed/include -O3 -DNDEBUG CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o -o /home/sssou/paper_infinite_domain/bin/MeshingPhobos  -Wl,-rpath,/home/sssou/local/gmsh/lib /home/sssou/local/gmsh/lib/libgmsh.so lib/libmeshgeom.a 
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: warning: relocation against `_ZN4mfem6Device16device_singletonE' in read-only section `.text._ZN4mfem6Vector9HostWriteEv[_ZN4mfem6Vector9HostWriteEv]'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::ReadWrite(bool)':
+MeshingPhobos.cpp:(.text._ZN4mfem6Vector9ReadWriteEb[_ZN4mfem6Vector9ReadWriteEb]+0x1b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9ReadWriteEb[_ZN4mfem6Vector9ReadWriteEb]+0x2b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9ReadWriteEb[_ZN4mfem6Vector9ReadWriteEb]+0x82): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9ReadWriteEb[_ZN4mfem6Vector9ReadWriteEb]+0xa7): undefined reference to `mfem::MemoryManager::ReadWrite_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::Write(bool)':
+MeshingPhobos.cpp:(.text._ZN4mfem6Vector5WriteEb[_ZN4mfem6Vector5WriteEb]+0x1b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector5WriteEb[_ZN4mfem6Vector5WriteEb]+0x2b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector5WriteEb[_ZN4mfem6Vector5WriteEb]+0x82): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector5WriteEb[_ZN4mfem6Vector5WriteEb]+0xa7): undefined reference to `mfem::MemoryManager::Write_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::Read(bool) const':
+MeshingPhobos.cpp:(.text._ZNK4mfem6Vector4ReadEb[_ZNK4mfem6Vector4ReadEb]+0x1b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector4ReadEb[_ZNK4mfem6Vector4ReadEb]+0x2b): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector4ReadEb[_ZNK4mfem6Vector4ReadEb]+0x82): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector4ReadEb[_ZNK4mfem6Vector4ReadEb]+0xa7): undefined reference to `mfem::MemoryManager::Read_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::~Vector()':
+MeshingPhobos.cpp:(.text._ZN4mfem6VectorD0Ev[_ZN4mfem6VectorD5Ev]+0x57): undefined reference to `mfem::MemoryManager::Delete_(void*, mfem::MemoryType, unsigned int)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::~Vector()':
+MeshingPhobos.cpp:(.text._ZN4mfem6VectorD2Ev[_ZN4mfem6VectorD5Ev]+0x47): undefined reference to `mfem::MemoryManager::Delete_(void*, mfem::MemoryType, unsigned int)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::HostReadWrite()':
+MeshingPhobos.cpp:(.text._ZN4mfem6Vector13HostReadWriteEv[_ZN4mfem6Vector13HostReadWriteEv]+0x1f): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector13HostReadWriteEv[_ZN4mfem6Vector13HostReadWriteEv]+0x6a): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector13HostReadWriteEv[_ZN4mfem6Vector13HostReadWriteEv]+0x8f): undefined reference to `mfem::MemoryManager::ReadWrite_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::HostRead() const':
+MeshingPhobos.cpp:(.text._ZNK4mfem6Vector8HostReadEv[_ZNK4mfem6Vector8HostReadEv]+0x1f): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector8HostReadEv[_ZNK4mfem6Vector8HostReadEv]+0x6a): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZNK4mfem6Vector8HostReadEv[_ZNK4mfem6Vector8HostReadEv]+0x8f): undefined reference to `mfem::MemoryManager::Read_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: CMakeFiles/MeshingPhobos.dir/mesh/MeshingPhobos.cpp.o: in function `mfem::Vector::HostWrite()':
+MeshingPhobos.cpp:(.text._ZN4mfem6Vector9HostWriteEv[_ZN4mfem6Vector9HostWriteEv]+0x1f): undefined reference to `mfem::Device::device_singleton'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9HostWriteEv[_ZN4mfem6Vector9HostWriteEv]+0x6a): undefined reference to `mfem::MemoryManager::Register_(void*, void*, unsigned long, mfem::MemoryType, bool, bool, unsigned int&)'
+/usr/bin/ld: MeshingPhobos.cpp:(.text._ZN4mfem6Vector9HostWriteEv[_ZN4mfem6Vector9HostWriteEv]+0x8f): undefined reference to `mfem::MemoryManager::Write_(void*, mfem::MemoryType, mfem::MemoryClass, unsigned long, unsigned int&)'
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE
+collect2: error: ld returned 1 exit status
+gmake[2]: *** [CMakeFiles/MeshingPhobos.dir/build.make:99: /home/sssou/paper_infinite_domain/bin/MeshingPhobos] Error 1
+gmake[2]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake[1]: *** [CMakeFiles/Makefile2:391: CMakeFiles/MeshingPhobos.dir/all] Error 2
+gmake[1]: Leaving directory '/home/sssou/paper_infinite_domain/build'
+gmake: *** [Makefile:91: all] Error 2

@@ -20,9 +20,9 @@ int main(int argc, char *argv[])
   const int nprocs = Mpi::WorldSize();
 
   const char *mesh_file = "mesh/simple_3d_ref.msh";
-  int order = 3;
+  int order = 2;
   int lmax  = 8;   
-  int method = 10;
+  int method = 1;
   int linearised = 0;
 
   real_t rho_small_dim = 5000.0;

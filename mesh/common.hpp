@@ -313,6 +313,14 @@ class Topography {
    */
   Topography& operator+=(const Topography& other);
 
+  Topography& operator+=(double b) {
+      for (auto& v : _data) {
+          v += b;
+      }
+
+      return *this;
+  }
+
   /**
    * @brief Pointwise addition of two topographies.
    * @param A Left operand.
@@ -559,6 +567,49 @@ class CubicBandLinearDecay final : public RadialMapping {
   double _decay = 0.0;      ///< Decay layer depth.
   std::size_t _iInner = 0;  ///< Index of inner base surface.
   std::size_t _iOuter = 1;  ///< Index of outer base surface.
+};
+
+class LinearDecay final : public RadialMapping {
+ public:
+  LinearDecay(const std::vector<const Topography*>& topo,
+              const std::vector<const RadialSurface*>& base, double decay,
+              double topo_exag = 1.0, std::size_t iInterface = 0)
+      : RadialMapping(topo, topo_exag),
+        _base(base),
+        _decay(decay),
+        _iInterface(iInterface) { }
+
+ 
+  double Displacement(double r, double lon, double lat) const override {
+      if (r <= 0.0) return 0.0;
+
+      const double r0 = _base[_iInterface]->RadiusAt(lon, lat);
+      const double d0 = InterpTopo(_iInterface, lon, lat);
+
+      if (_decay <= 0.0) {
+          return 0.0;
+      }
+
+      const double r_lo = r0 - _decay;
+      const double r_hi = r0 + _decay;
+
+      if (r < r_lo || r > r_hi) return 0.0;
+
+      if (r <= r0) {
+          double t = (r - r_lo) / _decay;
+          t = std::clamp(t, 0.0, 1.0);
+          return d0 * t;
+      }
+
+      double t = (r_hi - r) / _decay; 
+      t = std::clamp(t, 0.0, 1.0);
+      return d0 * t;
+  }
+
+ private:
+  const std::vector<const RadialSurface*>& _base; 
+  double _decay = 0.0;                            
+  std::size_t _iInterface = 0;                  
 };
 
 // Helper function to perturb radially all nodes in a mesh with the scheme
